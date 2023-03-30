@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8dc62d796eed0c4eb24c8e646903f62, type: 3}
+  m_Name: Cup3
+  m_EditorClassIdentifier: 
+  cupName: YellowCup
+  mat: {fileID: 2100000, guid: 89c402886df7a1d4eb3e67541abc58a1, type: 2}
+  price: 0
