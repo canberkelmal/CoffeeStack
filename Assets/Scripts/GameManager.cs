@@ -103,6 +103,15 @@ public class GameManager : MonoBehaviour
         //collectedCup.transform.position = refCup.transform.position + new Vector3(0, 0, 3);
     }
 
+    public void SetCollectedCupPositions()
+    {
+        for(int i=0; i<cupCount; i++)
+        {
+            //currentCup.position = Vector3.Lerp(collectedCups.transform.GetChild(i).position,
+            //                                   collectedCups.transform.GetChild(i).position, speed * Time.deltaTime);
+        }
+    }
+
     // Reload the current scene to restart the game
     public void Restart()
     {
