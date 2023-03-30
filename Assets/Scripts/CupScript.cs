@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class CupScript : MonoBehaviour
 {
-    public GameManager gM;
+    GameManager gM;
+
     public Cup cup;
     string cupName;
     int price;

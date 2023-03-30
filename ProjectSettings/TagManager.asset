@@ -6,7 +6,7 @@ TagManager:
   tags:
   - CollectedCup
   - CollectableCup
-  - LosenCup
+  - DroppedCup
   layers:
   - Default
   - TransparentFX

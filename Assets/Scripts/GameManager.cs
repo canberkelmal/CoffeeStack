@@ -25,12 +25,19 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameData")]
     public float cupWavingSens = 1f; // Maksimum target x position value for the player
 
+    [Title("Scene Objects only")]
     [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
     public GameObject cam; // The main camera in the scene
     [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
     public GameObject player; // The player object in the scene
     [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
     public GameObject collectedCups; // The cups object in the scene
+    [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
+    public GameObject droppedCups; // The cups object in the scene
 
     Vector3 camOffset; // The offset value between the player and camera at the start of the game
     Vector3 targetPosZ; // The target position value used for updating the player's Z position
@@ -43,6 +50,12 @@ public class GameManager : MonoBehaviour
         // MUST BE UPDATED AS TO FALLOW HAND!
         camOffset = player.transform.position - cam.transform.position; // Calculate the offset value between the player and camera
         cupCount = collectedCups.transform.childCount;
+
+        // Set the cups which are placed as collected at beginning as collected
+        for (int i=0; i<cupCount; i++)
+        {
+            CollectCup(collectedCups.transform.GetChild(i).gameObject);
+        }
     }
 
     // Update is called once per frame
@@ -60,12 +73,17 @@ public class GameManager : MonoBehaviour
         // Update the camera's position
         UpdateCamPosition();
 
+        // Update the collected cups's positions if there is at least one collected cup
+        if(cupCount > 0)
+        {
+            SetCollectedCupsPositions();
+        }
+
         // Restart the game when the "R" key is pressed
         if (Input.GetKeyDown(KeyCode.R))
         {
             Restart();
         }
-        SetCollectedCupPositions();
     }
 
     // Update the camera's position to follow the player's position according to camOffset
@@ -93,23 +111,33 @@ public class GameManager : MonoBehaviour
         player.transform.position = Vector3.Lerp(player.transform.position, targetPosZ, speed * Time.deltaTime);
     }
 
+    // Set the taken collectedCup as a child of collectedCups
     public void CollectCup(GameObject collectedCup)
     {
         collectedCup.GetComponent<CupScript>().collected = true;
         collectedCup.tag = "CollectedCup";
         collectedCup.GetComponent<Collider>().isTrigger = false;
-        //collectedCup.GetComponent<Rigidbody>().isKinematic = false;
-        GameObject refCup = collectedCups.transform.GetChild(cupCount-1).gameObject;
-        collectedCup.transform.position = refCup.transform.position + new Vector3(0,0,collectedCupDistance);
         collectedCup.transform.parent = collectedCups.transform;
         cupCount = collectedCups.transform.childCount;
-        //collectedCup.transform.position = refCup.transform.position + new Vector3(0, 0, 3);
     }
 
-    public void SetCollectedCupPositions()
+    public void DropTheCup(GameObject droppedCup)
+    {
+        droppedCup.GetComponent<CupScript>().collected = false;
+        droppedCup.tag = "DroppedCup";
+        droppedCup.GetComponent<Collider>().isTrigger = true;
+        droppedCup.transform.parent = droppedCups.transform;
+        droppedCup.transform.localPosition = new Vector3(0,0,0);
+        cupCount = collectedCups.transform.childCount;
+    }
+
+
+    // Update cups's X positions using Lerp and cups's Z positions according to distance of index
+    public void SetCollectedCupsPositions()
     {
         for(int i=0; i<cupCount; i++)
         {
+            // Set positions of the cups except 0th cup
             if(i != 0)
             {
                 Transform preCup = collectedCups.transform.GetChild(i - 1).transform;
@@ -119,11 +147,10 @@ public class GameManager : MonoBehaviour
 
                 collectedCups.transform.GetChild(i).position = targetPos;
             }
+            // Set position of the 0th cup to player's position
             else
             {
                 collectedCups.transform.GetChild(0).position = player.transform.position;
-
-                //collectedCups.transform.GetChild(0).localPosition = new Vector3(0, 0, 4);
             }
         }
     }
