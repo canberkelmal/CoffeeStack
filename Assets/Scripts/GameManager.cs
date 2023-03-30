@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     public float camSpeed = 1f; // Maksimum target x position value for the player
     [TabGroup("GameData")]
     public float collectedCupDistance = 4f; // Maksimum target x position value for the player
+    [TabGroup("GameData")]
+    public float cupWavingSens = 1f; // Maksimum target x position value for the player
 
     [TabGroup("GameObjects")]
     public GameObject cam; // The main camera in the scene
@@ -63,6 +65,7 @@ public class GameManager : MonoBehaviour
         {
             Restart();
         }
+        SetCollectedCupPositions();
     }
 
     // Update the camera's position to follow the player's position according to camOffset
@@ -107,8 +110,21 @@ public class GameManager : MonoBehaviour
     {
         for(int i=0; i<cupCount; i++)
         {
-            //currentCup.position = Vector3.Lerp(collectedCups.transform.GetChild(i).position,
-            //                                   collectedCups.transform.GetChild(i).position, speed * Time.deltaTime);
+            if(i != 0)
+            {
+                Transform preCup = collectedCups.transform.GetChild(i - 1).transform;
+                float targetX = Mathf.Lerp(collectedCups.transform.GetChild(i).position.x, preCup.transform.position.x, cupWavingSens * Time.deltaTime);
+                float targetZ = preCup.transform.position.z + collectedCupDistance;
+                Vector3 targetPos = new Vector3(targetX, 0, targetZ);
+
+                collectedCups.transform.GetChild(i).position = targetPos;
+            }
+            else
+            {
+                collectedCups.transform.GetChild(0).position = player.transform.position;
+
+                //collectedCups.transform.GetChild(0).localPosition = new Vector3(0, 0, 4);
+            }
         }
     }
 
