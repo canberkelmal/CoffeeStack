@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,6 +19,7 @@ public class GameManager : MonoBehaviour
     [TabGroup("GamePlay")]
     public float xMax = 5.0f; // Maksimum target x position value for the player
 
+
     [TabGroup("GameData")]
     public float camSpeed = 1f; // Maksimum target x position value for the player
     [TabGroup("GameData")]
@@ -27,25 +29,33 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameData")]
     public float cupScattingSens = 5f; // Maksimum target x position value for the player
 
-    [Title("Drop Cup")]
+    [Title("Hit Obstacle")]
     [TabGroup("GameData")]
     public float maxScattingRadius = 5f; // Maximum scatting radius on the X-Z plane
     [TabGroup("GameData")]
     public float maxScattingHeight = 2f; // Maximum scatting height that the object will jump to
     [TabGroup("GameData")]
-    public float scattingDuration = 1f; // Total duration of the scatting
+    public float hitWaitTime = 0.5f; // Wait duration after drop cup
+    [TabGroup("GameData")]
+    public float hitBackSens = 1f; // Hit back sensivity    
+    [TabGroup("GameData")]
+    public float hitBackZPoint = 5f; // Hit back force    
+    [TabGroup("GameData")]
+    public float hitBackBreakZ = 1f; // Hit back animation stop limit  
+
     [Title("Collect Cup")]
     [TabGroup("GameData")]
-    public float collectAnimDur = 1f; // Collect cup animation lerp value
+    public float collectAnimSens = 1f; // Collect cup animation lerp value
     [TabGroup("GameData")]
     public float collectAnimScaleMultiplier = 1f; // Collect cup animation max scale up value
     [TabGroup("GameData")]
     public float collectAnimTimeDiff = 1f; // Collect cup animation time difference between 2 cup in seconds
 
 
-    [Title("Collect Cup")]
+    [Title("Destroy Cup")]
     [TabGroup("GameData")]
     public float particleKillTime = 1f; // Destroy cup particle effect duration
+
     
 
     [Title("Scene Objects only")]
@@ -57,15 +67,15 @@ public class GameManager : MonoBehaviour
     public GameObject player; // The player object in the scene
     [TabGroup("GameObjects")]
     [SceneObjectsOnly]
-    public GameObject collectedCups; // The cups object in the scene
+    public GameObject collectedCups; // The collected cups object in the scene
     [TabGroup("GameObjects")]
     [SceneObjectsOnly]
-    public GameObject droppedCups; // The cups object in the scene
+    public GameObject droppedCups; // The dropped cups object in the scene
 
     [Title("Assets only")]
     [TabGroup("Assets")]
     [AssetsOnly]
-    public GameObject destroyCupEffect; // The main camera in the scene
+    public GameObject destroyCupEffect; // The destroy particle effect
 
 
     Vector3 camOffset; // The offset value between the player and camera at the start of the game
@@ -73,7 +83,8 @@ public class GameManager : MonoBehaviour
 
     int cupCount = 1;
 
-    bool stopMoving = false;
+    [DoNotSerialize]
+    public bool stopMoving = false;
 
     bool isGameStarted = false;
 
@@ -102,16 +113,18 @@ public class GameManager : MonoBehaviour
             isGameStarted = true;
         }
 
-        // Update the player's X position when the left mouse button is pressed
-        if (Input.GetMouseButton(0))
-        {
-            UpdatePlayerPositionX();
-        }
+        
 
-        // Update the player's Z position
+        // Update the player's position
         if (!stopMoving)
         {
             UpdatePlayerPositionZ();
+
+            // Update the player's X position when the left mouse button is pressed
+            if (Input.GetMouseButton(0))
+            {
+                UpdatePlayerPositionX();
+            }
         }
 
         // Update the camera's position
@@ -172,6 +185,7 @@ public class GameManager : MonoBehaviour
 
     public void HitCup(GameObject hitCup)
     {
+
         print(hitCup.transform.GetSiblingIndex() + ". child in" + cupCount);
         if (hitCup.transform.GetSiblingIndex() == cupCount - 1)
         {
@@ -180,19 +194,54 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            DropTheCup(hitCup);
+            stopMoving = true;
+            for (int i = hitCup.transform.GetSiblingIndex(); i<cupCount - 1; i++)
+            {
+                DropTheCup(collectedCups.transform.GetChild(i).gameObject);
+            }
+
+            Vector3 targetPosition = player.transform.position + (Vector3.back * hitBackZPoint);
+
+            StartCoroutine(HitBack(targetPosition));
         }
     }
 
-    public void DropTheCup(GameObject droppedCup)
+    /*
+    public void WaitHitBack()
     {
         stopMoving = true;
+        Vector3 targetPosition = player.transform.position + Vector3.back * hitBackZPoint;
+        while (player.transform.position.z > player.transform.position.z - hitBackZPoint + 0.1f)
+        {
+            player.transform.position = Vector3.Lerp(player.transform.position, targetPosition, hitBackSens * Time.deltaTime);
+        }
+        stopMoving = false;
+    }
+    */
+    
+    IEnumerator HitBack(Vector3 hitTo)
+    {
+        if (player.transform.position.z > hitTo.z + hitBackBreakZ)
+        {
+            player.transform.position = Vector3.Lerp(player.transform.position, hitTo, hitBackSens * Time.deltaTime);
+            yield return new WaitForSeconds(hitWaitTime);
+            StartCoroutine(HitBack(hitTo));
+        }
+        else
+        {
+            stopMoving = false;
+        }
+    }
+
+
+    public void DropTheCup(GameObject droppedCup)
+    {
+        droppedCup.tag = "DroppedCup";
         droppedCup.transform.parent = null;
         cupCount = collectedCups.transform.childCount;
         ScatterObject(droppedCup);
         droppedCup.GetComponent<Collider>().isTrigger = true;
         droppedCup.GetComponent<CupScript>().collected = false;
-        droppedCup.tag = "DroppedCup";
         droppedCup.transform.parent = droppedCups.transform;
     }
 
@@ -209,7 +258,7 @@ public class GameManager : MonoBehaviour
     {
         for(int i = cupCount-1; i >= 0; i--)
         {
-            StartCoroutine(collectedCups.transform.GetChild(i).GetComponent<CupScript>().ScaleObject(collectAnimDur, collectAnimScaleMultiplier));
+            StartCoroutine(collectedCups.transform.GetChild(i).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier));
             yield return new WaitForSeconds(collectAnimTimeDiff);
         }
     }
@@ -218,7 +267,10 @@ public class GameManager : MonoBehaviour
     {
         Rigidbody rb = scatteredObject.GetComponent<Rigidbody>();
         rb.isKinematic = false;
-        rb.AddForce(UnityEngine.Random.Range(-maxScattingRadius, maxScattingRadius), maxScattingHeight, UnityEngine.Random.Range(1, maxScattingRadius), ForceMode.Impulse);
+        float forceX = UnityEngine.Random.Range(-maxScattingRadius, maxScattingRadius);
+        float forceY = maxScattingHeight;
+        float forceZ = UnityEngine.Random.Range(1, maxScattingRadius);
+        rb.AddForce(forceX, forceY, forceZ, ForceMode.Impulse);
     }
 
 

@@ -7615,18 +7615,22 @@ MonoBehaviour:
   collectedCupDistance: 4
   cupWavingSens: 40
   cupScattingSens: 40
-  maxScattingRadius: 15
+  maxScattingRadius: 7
   maxScattingHeight: 15
-  scattingDuration: 0.5
-  collectAnimDur: 20
+  hitWaitTime: 0.01
+  hitBackSens: 10
+  hitBackZPoint: 20
+  hitBackBreakZ: 2
+  collectAnimSens: 30
   collectAnimScaleMultiplier: 1.3
-  collectAnimTimeDiff: 0.1
+  collectAnimTimeDiff: 0.074
   particleKillTime: 1
   cam: {fileID: 330585543}
   player: {fileID: 1719512759}
   collectedCups: {fileID: 1181471970}
   droppedCups: {fileID: 1839526468}
   destroyCupEffect: {fileID: 187952, guid: c05e92eaee7a00844867e5edc8e0dde1, type: 3}
+  stopMoving: 0
 --- !u!4 &1438160480
 Transform:
   m_ObjectHideFlags: 0
@@ -8478,7 +8482,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719512759}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -4}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10121,7 +10125,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1998176066}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 0, z: 60}
+  m_LocalPosition: {x: 5, y: 0, z: 52}
   m_LocalScale: {x: 2, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10141,6 +10145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obs: {fileID: 11400000, guid: ccddf963d91d9004181f1344d945791c, type: 2}
+  isHit: 0
 --- !u!65 &1998176069
 BoxCollider:
   m_ObjectHideFlags: 0
