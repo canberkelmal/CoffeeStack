@@ -24,6 +24,24 @@ public class GameManager : MonoBehaviour
     public float collectedCupDistance = 4f; // Maksimum target x position value for the player
     [TabGroup("GameData")]
     public float cupWavingSens = 1f; // Maksimum target x position value for the player
+    [TabGroup("GameData")]
+    public float cupScattingSens = 5f; // Maksimum target x position value for the player
+
+    [Title("Scatting Cup")]
+    [TabGroup("GameData")]
+    public float maxScattingRadius = 5f; // Maximum scatting radius on the X-Z plane
+    [TabGroup("GameData")]
+    public float maxScattingHeight = 2f; // Maximum scatting height that the object will jump to
+    [TabGroup("GameData")]
+    public float scattingDuration = 1f; // Total duration of the scatting
+    [Title("Collect Cup Animation")]
+    [TabGroup("GameData")]
+    public float collectAnimDur = 1f; // Collect cup animation lerp value
+    [TabGroup("GameData")]
+    public float collectAnimScaleMultiplier = 1f; // Collect cup animation max scale up value
+    [TabGroup("GameData")]
+    public float collectAnimTimeDiff = 1f; // Collect cup animation time difference between 2 cup in seconds
+
 
     [Title("Scene Objects only")]
     [TabGroup("GameObjects")]
@@ -44,6 +62,10 @@ public class GameManager : MonoBehaviour
 
     int cupCount = 1;
 
+    bool stopMoving = false;
+
+    bool isGameStarted = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -56,11 +78,19 @@ public class GameManager : MonoBehaviour
         {
             CollectCup(collectedCups.transform.GetChild(i).gameObject);
         }
+        stopMoving = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Update the player's X position when the left mouse button is pressed
+        if (Input.GetMouseButtonDown(0))
+        {
+            stopMoving = false;
+            isGameStarted = true;
+        }
+
         // Update the player's X position when the left mouse button is pressed
         if (Input.GetMouseButton(0))
         {
@@ -68,13 +98,16 @@ public class GameManager : MonoBehaviour
         }
 
         // Update the player's Z position
-        UpdatePlayerPositionZ();
+        if (!stopMoving)
+        {
+            UpdatePlayerPositionZ();
+        }
 
         // Update the camera's position
         UpdateCamPosition();
 
         // Update the collected cups's positions if there is at least one collected cup
-        if(cupCount > 0)
+        if(collectedCups.transform.childCount > 0)
         {
             SetCollectedCupsPositions();
         }
@@ -119,16 +152,39 @@ public class GameManager : MonoBehaviour
         collectedCup.GetComponent<Collider>().isTrigger = false;
         collectedCup.transform.parent = collectedCups.transform;
         cupCount = collectedCups.transform.childCount;
+
+        if (isGameStarted)
+        {
+            StartCoroutine(CollectCupAnim());
+        }
     }
 
     public void DropTheCup(GameObject droppedCup)
     {
+        stopMoving = true;
+        droppedCup.transform.parent = null;
+        cupCount = collectedCups.transform.childCount;
+        ScatterObject(droppedCup);
+        droppedCup.GetComponent<Collider>().isTrigger = true;
         droppedCup.GetComponent<CupScript>().collected = false;
         droppedCup.tag = "DroppedCup";
-        droppedCup.GetComponent<Collider>().isTrigger = true;
         droppedCup.transform.parent = droppedCups.transform;
-        droppedCup.transform.localPosition = new Vector3(0,0,0);
-        cupCount = collectedCups.transform.childCount;
+    }
+
+    IEnumerator CollectCupAnim()
+    {
+        for(int i = cupCount-1; i >= 0; i--)
+        {
+            StartCoroutine(collectedCups.transform.GetChild(i).GetComponent<CupScript>().ScaleObject(collectAnimDur, collectAnimScaleMultiplier));
+            yield return new WaitForSeconds(collectAnimTimeDiff);
+        }
+    }
+
+    void ScatterObject(GameObject scatteredObject)
+    {
+        Rigidbody rb = scatteredObject.GetComponent<Rigidbody>();
+        rb.isKinematic = false;
+        rb.AddForce(UnityEngine.Random.Range(-maxScattingRadius, maxScattingRadius), maxScattingHeight, UnityEngine.Random.Range(1, maxScattingRadius), ForceMode.Impulse);
     }
 
 
@@ -154,6 +210,46 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    /*// ScattedObject objesi bu methodda kullanýlacak.
+    public void ScatterObject(GameObject scattedObject)
+    {
+        // x-z düzleminde 5 birim yarýçapta rastgele bir pozisyon belirleyin
+        Vector2 randomCircle = UnityEngine.Random.insideUnitCircle.normalized * 5f;
+        Vector3 randomPosition = new Vector3(randomCircle.x, 0f, randomCircle.y);
+        randomPosition += scattedObject.transform.position; // verilen nesnenin pozisyonuna göre ayarla
+
+        // y ekseninde max 2 birim yüksekliðe çýkacak þekilde pozisyon ayarlayýn
+        float maxHeight = 2f;
+        float randomHeight = UnityEngine.Random.Range(0f, maxHeight);
+        randomPosition.y += randomHeight;
+
+        // nesneyi yeni pozisyonuna doðru hareket ettirin
+        StartCoroutine(MoveObject(scattedObject, randomPosition));
+    }
+
+    // verilen nesneyi verilen pozisyona doðru hareket ettirir
+    private IEnumerator MoveObject(GameObject obj, Vector3 targetPosition)
+    {
+        float distance = Vector3.Distance(obj.transform.position, targetPosition);
+        float duration = distance / cupScattingSens;
+
+        float startTime = Time.time;
+        Vector3 startPosition = obj.transform.position;
+
+        while (Time.time < startTime + duration)
+        {
+            float timePassed = Time.time - startTime;
+            float percentageComplete = timePassed / duration;
+            obj.transform.position = Vector3.Lerp(startPosition, targetPosition, percentageComplete);
+            yield return null;
+        }
+
+        obj.transform.position = targetPosition;
+    }*/
+
+
+
 
     // Reload the current scene to restart the game
     public void Restart()
