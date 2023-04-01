@@ -302,7 +302,7 @@ public class GameManager : MonoBehaviour
                 break;
             }
             StartCoroutine(collectedCups.transform.GetChild(i).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier));
-            print(i + ". child in" + (collectedCups.transform.childCount - 1));
+            //print(i + ". child in" + (collectedCups.transform.childCount - 1));
             yield return new WaitForSeconds(collectAnimTimeDiff);
         }
 
