@@ -32,9 +32,15 @@ public class GameManager : MonoBehaviour
 
     [Title("Hit Obstacle")]
     [TabGroup("GameData")]
-    public float maxScattingRadius = 5f; // Maximum scatting radius on the X-Z plane
+    public float minScattingX = 1f; // Minimum scatting distance on the X plane
     [TabGroup("GameData")]
-    public float maxScattingHeight = 2f; // Maximum scatting height that the object will jump to
+    public float maxScattingX = 5f; // Maximum scatting distance on the X plane
+    [TabGroup("GameData")]
+    public float minScattingZ = 3f; // Minimum scatting distance on the Z
+    [TabGroup("GameData")]
+    public float maxScattingZ = 3f; // Maximum scatting distance on the Z
+    [TabGroup("GameData")]
+    public float maxScattingHeight = 5f; // Maximum scatting height that the object will jump to
     [TabGroup("GameData")]
     public float hitWaitTime = 0.5f; // Wait duration after drop cup
     [TabGroup("GameData")]
@@ -220,15 +226,20 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            stopMoving = true;
-            obsSc.isHit = true;
-            for (int i = cupCount - 1; i >= hitCup.transform.GetSiblingIndex(); i--)
+            //stopMoving = true;
+            //obsSc.isHit = true;
+            int index = hitCup.transform.GetSiblingIndex();
+            DestroyCup(hitCup);
+            for (int i = collectedCups.transform.childCount - 1; i > index; i--)
             {
+                collectedCups.transform.GetChild(i).transform.position = obsSc.hitPoint;
                 DropTheCup(collectedCups.transform.GetChild(i).gameObject);
             }
 
             Vector3 targetPosition = player.transform.position + (Vector3.back * hitBackZPoint);
-            StartCoroutine(HitBack(targetPosition));
+
+            
+            //StartCoroutine(HitBack(targetPosition));
         }
     }
 
@@ -309,9 +320,9 @@ public class GameManager : MonoBehaviour
     {
         Rigidbody rb = scatteredObject.GetComponent<Rigidbody>();
         rb.isKinematic = false;
-        float forceX = UnityEngine.Random.Range(-maxScattingRadius, maxScattingRadius);
+        float forceX = UnityEngine.Random.Range(minScattingX, maxScattingX) * (UnityEngine.Random.Range(0, 2) * 2 - 1);
         float forceY = maxScattingHeight;
-        float forceZ = UnityEngine.Random.Range(1, maxScattingRadius);
+        float forceZ = UnityEngine.Random.Range(minScattingZ, maxScattingZ);
         rb.AddForce(forceX, forceY, forceZ, ForceMode.Impulse);
     }
 

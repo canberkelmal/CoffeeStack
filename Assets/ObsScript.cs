@@ -10,6 +10,7 @@ public class ObsScript : MonoBehaviour
     public Obstacle obs;
     public bool isHit = false;
     string obsName;
+    public Vector3 hitPoint;
 
     // Start is called before the first frame update
     void Awake()
@@ -24,6 +25,7 @@ public class ObsScript : MonoBehaviour
     {
         if (other.CompareTag("CollectedCup") && other.GetComponent<CupScript>().collected && !isHit)
         {
+            hitPoint = other.transform.position;
             gM.HitCup(other.gameObject, gameObject.GetComponent<ObsScript>());
         }
     }
