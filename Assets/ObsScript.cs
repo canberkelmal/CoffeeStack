@@ -21,7 +21,7 @@ public class ObsScript : MonoBehaviour
     {
         if (other.CompareTag("CollectedCup") && other.GetComponent<CupScript>().collected)
         {
-            gM.DropTheCup(other.gameObject);
+            gM.HitCup(other.gameObject);
         }
     }
 }

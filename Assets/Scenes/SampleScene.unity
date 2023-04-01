@@ -7621,10 +7621,12 @@ MonoBehaviour:
   collectAnimDur: 20
   collectAnimScaleMultiplier: 1.3
   collectAnimTimeDiff: 0.1
+  particleKillTime: 1
   cam: {fileID: 330585543}
   player: {fileID: 1719512759}
   collectedCups: {fileID: 1181471970}
   droppedCups: {fileID: 1839526468}
+  destroyCupEffect: {fileID: 187952, guid: c05e92eaee7a00844867e5edc8e0dde1, type: 3}
 --- !u!4 &1438160480
 Transform:
   m_ObjectHideFlags: 0
@@ -10119,7 +10121,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1998176066}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 0, z: 134}
+  m_LocalPosition: {x: 4, y: 0, z: 60}
   m_LocalScale: {x: 2, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

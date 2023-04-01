@@ -27,14 +27,14 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameData")]
     public float cupScattingSens = 5f; // Maksimum target x position value for the player
 
-    [Title("Scatting Cup")]
+    [Title("Drop Cup")]
     [TabGroup("GameData")]
     public float maxScattingRadius = 5f; // Maximum scatting radius on the X-Z plane
     [TabGroup("GameData")]
     public float maxScattingHeight = 2f; // Maximum scatting height that the object will jump to
     [TabGroup("GameData")]
     public float scattingDuration = 1f; // Total duration of the scatting
-    [Title("Collect Cup Animation")]
+    [Title("Collect Cup")]
     [TabGroup("GameData")]
     public float collectAnimDur = 1f; // Collect cup animation lerp value
     [TabGroup("GameData")]
@@ -42,6 +42,11 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameData")]
     public float collectAnimTimeDiff = 1f; // Collect cup animation time difference between 2 cup in seconds
 
+
+    [Title("Collect Cup")]
+    [TabGroup("GameData")]
+    public float particleKillTime = 1f; // Destroy cup particle effect duration
+    
 
     [Title("Scene Objects only")]
     [TabGroup("GameObjects")]
@@ -56,6 +61,12 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameObjects")]
     [SceneObjectsOnly]
     public GameObject droppedCups; // The cups object in the scene
+
+    [Title("Assets only")]
+    [TabGroup("Assets")]
+    [AssetsOnly]
+    public GameObject destroyCupEffect; // The main camera in the scene
+
 
     Vector3 camOffset; // The offset value between the player and camera at the start of the game
     Vector3 targetPosZ; // The target position value used for updating the player's Z position
@@ -159,6 +170,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void HitCup(GameObject hitCup)
+    {
+        print(hitCup.transform.GetSiblingIndex() + ". child in" + cupCount);
+        if (hitCup.transform.GetSiblingIndex() == cupCount - 1)
+        {
+            print("Destroy");
+            DestroyCup(hitCup);
+        }
+        else
+        {
+            DropTheCup(hitCup);
+        }
+    }
+
     public void DropTheCup(GameObject droppedCup)
     {
         stopMoving = true;
@@ -169,6 +194,15 @@ public class GameManager : MonoBehaviour
         droppedCup.GetComponent<CupScript>().collected = false;
         droppedCup.tag = "DroppedCup";
         droppedCup.transform.parent = droppedCups.transform;
+    }
+
+    public void DestroyCup(GameObject destroyCup)
+    {
+        Vector3 effectPos = destroyCup.transform.position + Vector3.up * 0.5f;
+        GameObject destroyEffect = Instantiate(destroyCupEffect, effectPos, Quaternion.identity);
+        Destroy(destroyCup);
+        Destroy(destroyEffect, particleKillTime);
+        cupCount--;
     }
 
     IEnumerator CollectCupAnim()
