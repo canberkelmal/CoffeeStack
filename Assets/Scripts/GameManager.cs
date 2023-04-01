@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -72,6 +73,11 @@ public class GameManager : MonoBehaviour
     [SceneObjectsOnly]
     public GameObject droppedCups; // The dropped cups object in the scene
 
+    [Title("UI")]
+    [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
+    public GameObject handledPriceText; // Handled cups price text
+
     [Title("Assets only")]
     [TabGroup("Assets")]
     [AssetsOnly]
@@ -81,9 +87,11 @@ public class GameManager : MonoBehaviour
     Vector3 camOffset; // The offset value between the player and camera at the start of the game
     Vector3 targetPosZ; // The target position value used for updating the player's Z position
 
-    int cupCount = 1;
+    public int cupCount = 1;
 
-    [DoNotSerialize]
+    int handledPrice = 0;
+
+    [NonSerialized]
     public bool stopMoving = false;
 
     bool isGameStarted = false;
@@ -176,14 +184,32 @@ public class GameManager : MonoBehaviour
         collectedCup.GetComponent<Collider>().isTrigger = false;
         collectedCup.transform.parent = collectedCups.transform;
         cupCount = collectedCups.transform.childCount;
-
+        SetHandledPrice(collectedCup.GetComponent<CupScript>().price, true);
+        collectedCup.GetComponent<CupScript>().SetSizeDefault();
         if (isGameStarted)
         {
             StartCoroutine(CollectCupAnim());
         }
     }
 
-    public void HitCup(GameObject hitCup)
+    // Adds or remove cup price from the handledPrice
+    public void SetHandledPrice(int opPrice, bool operation)
+    {
+        // Adds opPrice to the handled price
+        if(operation)
+        {
+            handledPrice += opPrice;
+            handledPriceText.GetComponent<Text>().text = handledPrice.ToString() + " $";
+        }
+        // Removes opPrice from the handledPrice
+        else
+        {
+            handledPrice -= opPrice;
+            handledPriceText.GetComponent<Text>().text = handledPrice.ToString() + " $";
+        }
+    }
+
+    public void HitCup(GameObject hitCup, ObsScript obsSc)
     {
 
         print(hitCup.transform.GetSiblingIndex() + ". child in" + cupCount);
@@ -195,6 +221,7 @@ public class GameManager : MonoBehaviour
         else
         {
             stopMoving = true;
+            obsSc.isHit = true;
             for (int i = cupCount - 1; i >= hitCup.transform.GetSiblingIndex(); i--)
             {
                 DropTheCup(collectedCups.transform.GetChild(i).gameObject);
@@ -236,29 +263,45 @@ public class GameManager : MonoBehaviour
     public void DropTheCup(GameObject droppedCup)
     {
         droppedCup.tag = "DroppedCup";
-        droppedCup.transform.parent = null;
-        cupCount = collectedCups.transform.childCount;
-        ScatterObject(droppedCup);
+        droppedCup.transform.parent = droppedCups.transform;
         droppedCup.GetComponent<Collider>().isTrigger = true;
         droppedCup.GetComponent<CupScript>().collected = false;
-        droppedCup.transform.parent = droppedCups.transform;
+        SetHandledPrice(droppedCup.GetComponent<CupScript>().price, false);
+        cupCount = collectedCups.transform.childCount;
+        ScatterObject(droppedCup);
     }
 
     public void DestroyCup(GameObject destroyCup)
     {
         Vector3 effectPos = destroyCup.transform.position + Vector3.up * 0.5f;
         GameObject destroyEffect = Instantiate(destroyCupEffect, effectPos, Quaternion.identity);
+        SetHandledPrice(destroyCup.GetComponent<CupScript>().price, false);
         Destroy(destroyCup);
         Destroy(destroyEffect, particleKillTime);
-        cupCount--;
+        cupCount = collectedCups.transform.childCount;
     }
 
     IEnumerator CollectCupAnim()
     {
-        for(int i = cupCount-1; i >= 0; i--)
+        for(int i = collectedCups.transform.childCount-1; i >= 0; i--)
         {
+            if (stopMoving)
+            {
+                SetCupsSizesDefault();
+                break;
+            }
             StartCoroutine(collectedCups.transform.GetChild(i).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier));
+            print(i + ". child in" + (collectedCups.transform.childCount - 1));
             yield return new WaitForSeconds(collectAnimTimeDiff);
+        }
+
+    }
+
+    public void SetCupsSizesDefault()
+    {
+        for (int i = collectedCups.transform.childCount - 1; i >= 0; i--)
+        {
+            collectedCups.transform.GetChild(i).GetComponent<CupScript>().SetSizeDefault();
         }
     }
 

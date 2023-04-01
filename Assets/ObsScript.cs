@@ -12,9 +12,11 @@ public class ObsScript : MonoBehaviour
     string obsName;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         gM = FindObjectOfType<GameManager>();
+
+        obsName = obs.name;
 
         GetComponent<Renderer>().material = obs.mat;
     }
@@ -22,8 +24,7 @@ public class ObsScript : MonoBehaviour
     {
         if (other.CompareTag("CollectedCup") && other.GetComponent<CupScript>().collected && !isHit)
         {
-            isHit = true;
-            gM.HitCup(other.gameObject);
+            gM.HitCup(other.gameObject, gameObject.GetComponent<ObsScript>());
         }
     }
 }

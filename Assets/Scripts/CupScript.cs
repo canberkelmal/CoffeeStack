@@ -8,15 +8,17 @@ public class CupScript : MonoBehaviour
     GameManager gM;
 
     public Cup cup;
-    string cupName;
-    int price;
+    public string cupName;
+    public int price;
 
-    Vector3 defScale;
+    public Vector3 defScale;
 
-    [DoNotSerialize]
     public bool collected = false;
+
+    public bool resizing = false;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         gM = FindObjectOfType<GameManager>();
 
@@ -39,28 +41,61 @@ public class CupScript : MonoBehaviour
         if (other.gameObject.CompareTag("Ground") && gameObject.CompareTag("DroppedCup"))
         {
             GetComponent<Rigidbody>().isKinematic = true;
+            Vector3 targetPos = transform.position;
+            targetPos.y = 0;
+            transform.position = targetPos;
             gameObject.tag = "CollectableCup";
         }
     }
 
     public IEnumerator ScaleObject(float scalingSens, float maxScaleConstant)
     {
-        Vector3 startScale = defScale; // Baþlangýç scale deðerleri
-        Vector3 targetScale = startScale * maxScaleConstant; // Hedef scale deðerleri
 
-        // Büyütme iþlemi
-        while (transform.localScale.x < targetScale.x)
+        if(!resizing)
         {
-            transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.1f, scalingSens * Time.deltaTime);
-            yield return new WaitForSeconds(0.01f);
-        }
+            resizing = true;
+            Vector3 targetScale = defScale * maxScaleConstant; // Hedef scale deðerleri
 
-        // Küçültme iþlemi
-        while (transform.localScale.x > startScale.x)
-        {
-            transform.localScale = Vector3.Lerp(transform.localScale, startScale / 1.1f, scalingSens * Time.deltaTime);
+            SetSizeDefault();
+            // Büyütme iþlemi
+            while (transform.localScale.x < targetScale.x)
+            {
+                /*if (gM.stopMoving)
+                {
+                    SetSizeDefault();
+                    break;
+                }*/
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scalingSens * Time.deltaTime);
+                yield return new WaitForSeconds(0.01f);
+            }
+
+            if (transform.localScale.x >= targetScale.x)
+            {
+                transform.localScale = targetScale;
+            }
+
             yield return new WaitForSeconds(0.01f);
+
+            // Küçültme iþlemi
+            while (transform.localScale.x > defScale.x)
+            {
+                /*if (gM.stopMoving)
+                {
+                    SetSizeDefault();
+                    break;
+                }*/
+                transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scalingSens * Time.deltaTime);
+                yield return new WaitForSeconds(0.01f);
+            }
+            SetSizeDefault();
+            resizing = false;
         }
+        
+    }
+
+    public void SetSizeDefault()
+    {
+        transform.localScale = defScale;
     }
 
 

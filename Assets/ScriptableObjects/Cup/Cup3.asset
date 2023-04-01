@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cupName: YellowCup
   mat: {fileID: 2100000, guid: 89c402886df7a1d4eb3e67541abc58a1, type: 2}
-  price: 0
+  price: 3
