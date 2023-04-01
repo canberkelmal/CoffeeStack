@@ -2228,7 +2228,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 3
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
@@ -7719,11 +7719,11 @@ MonoBehaviour:
   collectedCupDistance: 4
   cupWavingSens: 40
   cupScattingSens: 40
-  minScattingX: 1
-  maxScattingX: 5
-  minScattingZ: 80
-  maxScattingZ: 150
-  maxScattingHeight: 10
+  minScattingX: 0
+  maxScattingX: 40
+  minScattingZ: 100
+  maxScattingZ: 200
+  maxScattingHeight: 6
   hitWaitTime: 0.01
   hitBackSens: 10
   hitBackZPoint: 20
@@ -10492,7 +10492,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1998176066}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: 0, z: 52}
+  m_LocalPosition: {x: 2, y: 0, z: 132}
   m_LocalScale: {x: 2, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

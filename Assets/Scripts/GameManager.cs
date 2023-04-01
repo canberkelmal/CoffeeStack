@@ -330,7 +330,7 @@ public class GameManager : MonoBehaviour
     // Update cups's X positions using Lerp and cups's Z positions according to distance of index
     public void SetCollectedCupsPositions()
     {
-        for(int i=0; i<cupCount; i++)
+        for(int i=0; i< collectedCups.transform.childCount; i++)
         {
             // Set positions of the cups except 0th cup
             if(i != 0)
