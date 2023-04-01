@@ -195,13 +195,12 @@ public class GameManager : MonoBehaviour
         else
         {
             stopMoving = true;
-            for (int i = hitCup.transform.GetSiblingIndex(); i<cupCount - 1; i++)
+            for (int i = cupCount - 1; i >= hitCup.transform.GetSiblingIndex(); i--)
             {
                 DropTheCup(collectedCups.transform.GetChild(i).gameObject);
             }
 
             Vector3 targetPosition = player.transform.position + (Vector3.back * hitBackZPoint);
-
             StartCoroutine(HitBack(targetPosition));
         }
     }
