@@ -11,6 +11,7 @@ public class ObsScript : MonoBehaviour
     public bool isHit = false;
     string obsName;
     public Vector3 hitPoint;
+    public bool hitBack;
 
     // Start is called before the first frame update
     void Awake()
@@ -20,6 +21,8 @@ public class ObsScript : MonoBehaviour
         obsName = obs.name;
 
         GetComponent<Renderer>().material = obs.mat;
+
+        hitBack = obs.hitBack;
     }
     void OnTriggerEnter(Collider other)
     {

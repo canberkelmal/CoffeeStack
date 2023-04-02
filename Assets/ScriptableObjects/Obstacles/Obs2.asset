@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b87e930b7d475e5468a49277f99b7204, type: 3}
-  m_Name: Obs1
+  m_Name: Obs2
   m_EditorClassIdentifier: 
-  obstacleName: Obs1
-  mat: {fileID: 2100000, guid: f598d77e4e082c54cbf7f7ed3067d566, type: 2}
-  hitBack: 0
+  obstacleName: Obs2
+  mat: {fileID: 2100000, guid: 57f7202ec4d43094cb18df5bc998c75c, type: 2}
+  hitBack: 1

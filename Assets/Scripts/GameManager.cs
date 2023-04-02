@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameData")]
     public float maxScattingHeight = 5f; // Maximum scatting height that the object will jump to
     [TabGroup("GameData")]
-    public float hitWaitTime = 0.5f; // Wait duration after drop cup
+    public float hitBackNumeratorInternals = 0.01f; // Wait duration between HitBack numerator loop steps
     [TabGroup("GameData")]
     public float hitBackSens = 1f; // Hit back sensivity    
     [TabGroup("GameData")]
@@ -224,10 +224,10 @@ public class GameManager : MonoBehaviour
             print("Destroy");
             DestroyCup(hitCup);
         }
-        else
+        else if(obsSc.hitBack)
         {
-            //stopMoving = true;
-            //obsSc.isHit = true;
+            stopMoving = true;
+            obsSc.isHit = true;
             int index = hitCup.transform.GetSiblingIndex();
             DestroyCup(hitCup);
             for (int i = collectedCups.transform.childCount - 1; i > index; i--)
@@ -237,31 +237,26 @@ public class GameManager : MonoBehaviour
             }
 
             Vector3 targetPosition = player.transform.position + (Vector3.back * hitBackZPoint);
-
-            
-            //StartCoroutine(HitBack(targetPosition));
+            StartCoroutine(HitBack(targetPosition));
         }
-    }
-
-    /*
-    public void WaitHitBack()
-    {
-        stopMoving = true;
-        Vector3 targetPosition = player.transform.position + Vector3.back * hitBackZPoint;
-        while (player.transform.position.z > player.transform.position.z - hitBackZPoint + 0.1f)
+        else
         {
-            player.transform.position = Vector3.Lerp(player.transform.position, targetPosition, hitBackSens * Time.deltaTime);
+            int index = hitCup.transform.GetSiblingIndex();
+            DestroyCup(hitCup);
+            for (int i = collectedCups.transform.childCount - 1; i > index; i--)
+            {
+                collectedCups.transform.GetChild(i).transform.position = obsSc.hitPoint;
+                DropTheCup(collectedCups.transform.GetChild(i).gameObject);
+            }
         }
-        stopMoving = false;
     }
-    */
     
     IEnumerator HitBack(Vector3 hitTo)
     {
         if (player.transform.position.z > hitTo.z + hitBackBreakZ)
         {
             player.transform.position = Vector3.Lerp(player.transform.position, hitTo, hitBackSens * Time.deltaTime);
-            yield return new WaitForSeconds(hitWaitTime);
+            yield return new WaitForSeconds(hitBackNumeratorInternals);
             StartCoroutine(HitBack(hitTo));
         }
         else
@@ -302,7 +297,6 @@ public class GameManager : MonoBehaviour
                 break;
             }
             StartCoroutine(collectedCups.transform.GetChild(i).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier));
-            //print(i + ". child in" + (collectedCups.transform.childCount - 1));
             yield return new WaitForSeconds(collectAnimTimeDiff);
         }
 
@@ -327,7 +321,8 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // Update cups's X positions using Lerp and cups's Z positions according to distance of index
+    // Update cups's X positions using Lerp and
+    // cups's Z positions according to distance of index
     public void SetCollectedCupsPositions()
     {
         for(int i=0; i< collectedCups.transform.childCount; i++)
@@ -349,6 +344,19 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    // Reload the current scene to restart the game
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+
+
+
+
+
+
 
     /*// ScattedObject objesi bu methodda kullanýlacak.
     public void ScatterObject(GameObject scattedObject)
@@ -388,11 +396,16 @@ public class GameManager : MonoBehaviour
     }*/
 
 
-
-
-    // Reload the current scene to restart the game
-    public void Restart()
+    /*
+    public void WaitHitBack()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        stopMoving = true;
+        Vector3 targetPosition = player.transform.position + Vector3.back * hitBackZPoint;
+        while (player.transform.position.z > player.transform.position.z - hitBackZPoint + 0.1f)
+        {
+            player.transform.position = Vector3.Lerp(player.transform.position, targetPosition, hitBackSens * Time.deltaTime);
+        }
+        stopMoving = false;
     }
+    */
 }

@@ -8,4 +8,6 @@ public class Obstacle : ScriptableObject
     public string obstacleName;
 
     public Material mat;
+
+    public bool hitBack;
 }
