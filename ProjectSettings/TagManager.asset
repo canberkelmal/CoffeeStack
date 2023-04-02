@@ -8,6 +8,7 @@ TagManager:
   - CollectableCup
   - DroppedCup
   - Ground
+  - EndGround
   layers:
   - Default
   - TransparentFX

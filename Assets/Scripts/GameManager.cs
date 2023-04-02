@@ -83,9 +83,15 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameObjects")]
     [SceneObjectsOnly]
     public GameObject handledPriceText; // Handled cups price text
+    [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
+    public GameObject playingPanel;
+    [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
+    public GameObject pausePanel;
 
     [Title("Assets only")]
-    [TabGroup("Assets")]
+    [TabGroup("GameObjects")]
     [AssetsOnly]
     public GameObject destroyCupEffect; // The destroy particle effect
 
@@ -101,6 +107,11 @@ public class GameManager : MonoBehaviour
     public bool stopMoving = false;
 
     bool isGameStarted = false;
+
+    void Awake()
+    {
+        Time.timeScale = 1f;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -349,6 +360,26 @@ public class GameManager : MonoBehaviour
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void PauseButton()
+    {
+        Time.timeScale = 0f;
+        playingPanel.SetActive(false);
+        pausePanel.SetActive(value: true);
+    }
+    public void ContinueButton()
+    {
+        Time.timeScale = 1f;
+        playingPanel.SetActive(true);
+        pausePanel.SetActive(value: false);
+    }
+
+    public void RestartButton()
+    {
+        playingPanel.SetActive(true);
+        pausePanel.SetActive(value: false);
+        Restart();
     }
 
 
