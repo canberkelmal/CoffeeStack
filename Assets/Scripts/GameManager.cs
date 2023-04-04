@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour
     {
         //cam.transform.position = player.transform.position - camOffset;
 
-        cam.transform.position = Vector3.Lerp(cam.transform.position, player.transform.position - camOffset, camSpeed * Time.deltaTime) ;
+        cam.transform.position = Vector3.Lerp(cam.transform.position, player.transform.position - camOffset, camSpeed * Time.fixedDeltaTime) ;
     }
 
     // Update the players's horizontal/X position while mouse/finger is moving
@@ -198,7 +198,7 @@ public class GameManager : MonoBehaviour
     void UpdatePlayerPositionZ()
     {
         targetPosZ = player.transform.position + new Vector3(0,0,1);
-        player.transform.position = Vector3.Lerp(player.transform.position, targetPosZ, speed * Time.deltaTime);
+        player.transform.position = Vector3.Lerp(player.transform.position, targetPosZ, speed * Time.fixedDeltaTime);
     }
 
     // Set the taken collectedCup as a child of collectedCups
@@ -274,7 +274,7 @@ public class GameManager : MonoBehaviour
     {
         if (player.transform.position.z > hitTo.z + hitBackBreakZ)
         {
-            player.transform.position = Vector3.Lerp(player.transform.position, hitTo, hitBackSens * Time.deltaTime);
+            player.transform.position = Vector3.Lerp(player.transform.position, hitTo, hitBackSens * Time.fixedDeltaTime);
             yield return new WaitForSeconds(hitBackNumeratorInternals);
             StartCoroutine(HitBack(hitTo));
         }
@@ -350,7 +350,7 @@ public class GameManager : MonoBehaviour
             if(i != 0)
             {
                 Transform preCup = collectedCups.transform.GetChild(i - 1).transform;
-                float targetX = Mathf.Lerp(collectedCups.transform.GetChild(i).position.x, preCup.transform.position.x, cupWavingSens * Time.deltaTime);
+                float targetX = Mathf.Lerp(collectedCups.transform.GetChild(i).position.x, preCup.transform.position.x, cupWavingSens * Time.fixedDeltaTime);
                 float targetZ = preCup.transform.position.z + collectedCupDistance;
                 Vector3 targetPos = new Vector3(targetX, preCup.transform.position.y, targetZ);
 
@@ -362,6 +362,11 @@ public class GameManager : MonoBehaviour
                 collectedCups.transform.GetChild(0).position = player.transform.position + Vector3.up * collectedCupYOffset;
             }
         }
+    }
+
+    public void PutLidToCup(GameObject liddedCup)
+    {
+        liddedCup.transform.GetChild(0).gameObject.SetActive(true);
     }
 
     // Reload the current scene to restart the game
