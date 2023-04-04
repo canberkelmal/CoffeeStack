@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour
     public float cupWavingSens = 1f; // Maksimum target x position value for the player
     [TabGroup("GameData")]
     public float cupScattingSens = 5f; // Maksimum target x position value for the player
+    [TabGroup("GameData")]
+    public float collectedCupYOffset = 1f; // Y position offset for the collected cups 
 
     [Title("Hit Obstacle")]
     [TabGroup("GameData")]
@@ -49,6 +51,8 @@ public class GameManager : MonoBehaviour
     public float hitBackZPoint = 5f; // Hit back force    
     [TabGroup("GameData")]
     public float hitBackBreakZ = 1f; // Hit back animation stop limit  
+
+    
 
     [Title("Collect Cup")]
     [TabGroup("GameData")]
@@ -83,6 +87,9 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameObjects")]
     [SceneObjectsOnly]
     public GameObject handledPriceText; // Handled cups price text
+    [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
+    public GameObject startPanel;
     [TabGroup("GameObjects")]
     [SceneObjectsOnly]
     public GameObject playingPanel;
@@ -132,8 +139,9 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // Update the player's X position when the left mouse button is pressed
-        if (Input.GetMouseButtonDown(0))
-        {
+        if (Input.GetMouseButtonDown(0) && !isGameStarted)
+        {            
+            startPanel.SetActive(false);
             stopMoving = false;
             isGameStarted = true;
         }
@@ -344,14 +352,14 @@ public class GameManager : MonoBehaviour
                 Transform preCup = collectedCups.transform.GetChild(i - 1).transform;
                 float targetX = Mathf.Lerp(collectedCups.transform.GetChild(i).position.x, preCup.transform.position.x, cupWavingSens * Time.deltaTime);
                 float targetZ = preCup.transform.position.z + collectedCupDistance;
-                Vector3 targetPos = new Vector3(targetX, 0, targetZ);
+                Vector3 targetPos = new Vector3(targetX, preCup.transform.position.y, targetZ);
 
                 collectedCups.transform.GetChild(i).position = targetPos;
             }
             // Set position of the 0th cup to player's position
             else
             {
-                collectedCups.transform.GetChild(0).position = player.transform.position;
+                collectedCups.transform.GetChild(0).position = player.transform.position + Vector3.up * collectedCupYOffset;
             }
         }
     }

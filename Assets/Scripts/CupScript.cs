@@ -17,6 +17,8 @@ public class CupScript : MonoBehaviour
 
     public bool resizing = false;
 
+    float startY;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -29,6 +31,8 @@ public class CupScript : MonoBehaviour
         GetComponent<Renderer>().material = cup.mat; 
         
         defScale = transform.localScale;
+
+        startY = transform.localPosition.y;
     }
 
     void OnTriggerEnter(Collider other)
@@ -42,7 +46,7 @@ public class CupScript : MonoBehaviour
         {
             GetComponent<Rigidbody>().isKinematic = true;
             Vector3 targetPos = transform.position;
-            targetPos.y = 0;
+            //targetPos.y = 0;
             transform.position = targetPos;
             gameObject.tag = "CollectableCup";
         }
@@ -65,7 +69,7 @@ public class CupScript : MonoBehaviour
                     SetSizeDefault();
                     break;
                 }*/
-                transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scalingSens * Time.deltaTime);
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scalingSens * Time.fixedDeltaTime);
                 yield return new WaitForSeconds(0.01f);
             }
 
@@ -84,7 +88,7 @@ public class CupScript : MonoBehaviour
                     SetSizeDefault();
                     break;
                 }*/
-                transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scalingSens * Time.deltaTime);
+                transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scalingSens * Time.fixedDeltaTime);
                 yield return new WaitForSeconds(0.01f);
             }
             SetSizeDefault();
