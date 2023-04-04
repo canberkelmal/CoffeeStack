@@ -55,7 +55,7 @@ public class LidMachineScript : MonoBehaviour
             targetPos = movingPartUpPos;
         }
 
-        movingPart.transform.position = Vector3.MoveTowards(movingPart.transform.position, targetPos, upDownSpeed * Time.fixedDeltaTime);
+        movingPart.transform.position = Vector3.MoveTowards(movingPart.transform.position, targetPos, upDownSpeed * Time.deltaTime);
 
         if (movingPart.transform.position.y == movingPartUpPos.y)
         {

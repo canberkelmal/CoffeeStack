@@ -51,7 +51,6 @@ public class GameManager : MonoBehaviour
     public float hitBackZPoint = 5f; // Hit back force    
     [TabGroup("GameData")]
     public float hitBackBreakZ = 1f; // Hit back animation stop limit  
-
     
 
     [Title("Collect Cup")]
@@ -110,7 +109,7 @@ public class GameManager : MonoBehaviour
 
     int handledPrice = 0;
 
-    [NonSerialized]
+    //[NonSerialized]
     public bool stopMoving = false;
 
     bool isGameStarted = false;
@@ -145,28 +144,10 @@ public class GameManager : MonoBehaviour
             stopMoving = false;
             isGameStarted = true;
         }
-
-        
-
-        // Update the player's position
-        if (!stopMoving)
+        // Update the player's X position when the left mouse button is pressed
+        if (Input.GetMouseButton(0) && !stopMoving)
         {
-            UpdatePlayerPositionZ();
-
-            // Update the player's X position when the left mouse button is pressed
-            if (Input.GetMouseButton(0))
-            {
-                UpdatePlayerPositionX();
-            }
-        }
-
-        // Update the camera's position
-        UpdateCamPosition();
-
-        // Update the collected cups's positions if there is at least one collected cup
-        if(collectedCups.transform.childCount > 0)
-        {
-            SetCollectedCupsPositions();
+            UpdatePlayerPositionX();
         }
 
         // Restart the game when the "R" key is pressed
@@ -176,12 +157,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void FixedUpdate()
+    {
+        // Update the camera's position
+        UpdateCamPosition();
+
+        // Update the collected cups's positions if there is at least one collected cup
+        if(collectedCups.transform.childCount > 0)
+        {
+            SetCollectedCupsPositions();
+        }
+
+        // Update the player's position
+        if (!stopMoving)
+        {
+            UpdatePlayerPositionZ();
+        }
+    }
+
     // Update the camera's position to follow the player's position according to camOffset
     void UpdateCamPosition()
     {
         //cam.transform.position = player.transform.position - camOffset;
 
-        cam.transform.position = Vector3.Lerp(cam.transform.position, player.transform.position - camOffset, camSpeed * Time.fixedDeltaTime) ;
+        cam.transform.position = Vector3.Lerp(cam.transform.position, player.transform.position - camOffset, camSpeed * Time.deltaTime) ;
     }
 
     // Update the players's horizontal/X position while mouse/finger is moving
@@ -198,7 +197,7 @@ public class GameManager : MonoBehaviour
     void UpdatePlayerPositionZ()
     {
         targetPosZ = player.transform.position + new Vector3(0,0,1);
-        player.transform.position = Vector3.Lerp(player.transform.position, targetPosZ, speed * Time.fixedDeltaTime);
+        player.transform.position = Vector3.Lerp(player.transform.position, targetPosZ, speed * Time.deltaTime);
     }
 
     // Set the taken collectedCup as a child of collectedCups
@@ -213,7 +212,8 @@ public class GameManager : MonoBehaviour
         collectedCup.GetComponent<CupScript>().SetSizeDefault();
         if (isGameStarted)
         {
-            StartCoroutine(CollectCupAnim());
+            //StartCoroutine(CollectCupAnim());
+            CollectCupAnim();
         }
     }
 
@@ -274,7 +274,7 @@ public class GameManager : MonoBehaviour
     {
         if (player.transform.position.z > hitTo.z + hitBackBreakZ)
         {
-            player.transform.position = Vector3.Lerp(player.transform.position, hitTo, hitBackSens * Time.fixedDeltaTime);
+            player.transform.position = Vector3.Lerp(player.transform.position, hitTo, hitBackSens * Time.deltaTime);
             yield return new WaitForSeconds(hitBackNumeratorInternals);
             StartCoroutine(HitBack(hitTo));
         }
@@ -306,7 +306,7 @@ public class GameManager : MonoBehaviour
         cupCount = collectedCups.transform.childCount;
     }
 
-    IEnumerator CollectCupAnim()
+    /*IEnumerator CollectCupAnim()
     {
         for(int i = collectedCups.transform.childCount-1; i >= 0; i--)
         {
@@ -318,7 +318,21 @@ public class GameManager : MonoBehaviour
             StartCoroutine(collectedCups.transform.GetChild(i).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier));
             yield return new WaitForSeconds(collectAnimTimeDiff);
         }
+    }*/
 
+
+    public void CollectCupAnim()
+    {
+        print("CollectCupAnim triggered");
+        if (stopMoving)
+        {
+            SetCupsSizesDefault();
+        }
+        else
+        {
+            print("CollectCupAnim first object triggered triggered");
+            collectedCups.transform.GetChild(collectedCups.transform.childCount - 1).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier);
+        }
     }
 
     public void SetCupsSizesDefault()
@@ -350,7 +364,7 @@ public class GameManager : MonoBehaviour
             if(i != 0)
             {
                 Transform preCup = collectedCups.transform.GetChild(i - 1).transform;
-                float targetX = Mathf.Lerp(collectedCups.transform.GetChild(i).position.x, preCup.transform.position.x, cupWavingSens * Time.fixedDeltaTime);
+                float targetX = Mathf.Lerp(collectedCups.transform.GetChild(i).position.x, preCup.transform.position.x, cupWavingSens * Time.deltaTime);
                 float targetZ = preCup.transform.position.z + collectedCupDistance;
                 Vector3 targetPos = new Vector3(targetX, preCup.transform.position.y, targetZ);
 

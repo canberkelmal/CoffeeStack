@@ -54,9 +54,39 @@ public class CupScript : MonoBehaviour
 
     public IEnumerator ScaleObject(float scalingSens, float maxScaleConstant)
     {
+        SetSizeDefault();
+        Vector3 targetScale = defScale * maxScaleConstant; // Hedef scale deðerleri
 
+        // Büyütme iþlemi
+        while (transform.localScale.x < targetScale.x)
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scalingSens * Time.deltaTime);
+            yield return new WaitForSeconds(0.001f);
+        }
+
+        if (transform.localScale.x >= targetScale.x)
+        {
+            transform.localScale = targetScale;
+        }
+        int siblingIndex = transform.GetSiblingIndex();
+        if (siblingIndex != 0)
+        {
+            transform.parent.GetChild(siblingIndex - 1).GetComponent<CupScript>().ScaleObject(scalingSens, maxScaleConstant);
+        }
+
+        yield return new WaitForSeconds(0.001f);
+
+        // Küçültme iþlemi
+        while (transform.localScale.x > defScale.x)
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scalingSens * Time.deltaTime);
+            yield return new WaitForSeconds(0.001f);
+        }
+        SetSizeDefault();
+        /*
         if(!resizing)
         {
+            StopCoroutine("ScaleObject");
             resizing = true;
             Vector3 targetScale = defScale * maxScaleConstant; // Hedef scale deðerleri
 
@@ -64,12 +94,12 @@ public class CupScript : MonoBehaviour
             // Büyütme iþlemi
             while (transform.localScale.x < targetScale.x)
             {
-                /*if (gM.stopMoving)
+                *//*if (gM.stopMoving)
                 {
                     SetSizeDefault();
                     break;
-                }*/
-                transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scalingSens * Time.fixedDeltaTime);
+                }*//*
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scalingSens * Time.deltaTime);
                 yield return new WaitForSeconds(0.01f);
             }
 
@@ -83,18 +113,19 @@ public class CupScript : MonoBehaviour
             // Küçültme iþlemi
             while (transform.localScale.x > defScale.x)
             {
-                /*if (gM.stopMoving)
+                *//*if (gM.stopMoving)
                 {
                     SetSizeDefault();
                     break;
-                }*/
-                transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scalingSens * Time.fixedDeltaTime);
+                }*//*
+                transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scalingSens * Time.deltaTime);
                 yield return new WaitForSeconds(0.01f);
             }
             SetSizeDefault();
             resizing = false;
-        }
-        
+            //StopCoroutine("ScaleObject");
+        }*/
+
     }
 
     public void SetSizeDefault()
