@@ -44,8 +44,6 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameData")]
     public float maxScattingHeight = 5f; // Maximum scatting height that the object will jump to
     [TabGroup("GameData")]
-    public float hitBackNumeratorInternals = 0.01f; // Wait duration between HitBack numerator loop steps
-    [TabGroup("GameData")]
     public float hitBackSens = 1f; // Hit back sensivity    
     [TabGroup("GameData")]
     public float hitBackZPoint = 5f; // Hit back force    
@@ -234,6 +232,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void PutLidToCup(GameObject liddedCup)
+    {
+        liddedCup.GetComponent<CupScript>().PutLid();
+        SetHandledPrice(1, true);
+    }
+
     public void HitCup(GameObject hitCup, ObsScript obsSc)
     {
 
@@ -275,7 +279,7 @@ public class GameManager : MonoBehaviour
         if (player.transform.position.z > hitTo.z + hitBackBreakZ)
         {
             player.transform.position = Vector3.Lerp(player.transform.position, hitTo, hitBackSens * Time.deltaTime);
-            yield return new WaitForSeconds(hitBackNumeratorInternals);
+            yield return new WaitForSeconds(0.01f);
             StartCoroutine(HitBack(hitTo));
         }
         else
@@ -331,7 +335,7 @@ public class GameManager : MonoBehaviour
         else
         {
             print("CollectCupAnim first object triggered triggered");
-            collectedCups.transform.GetChild(collectedCups.transform.childCount - 1).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier);
+            StartCoroutine( collectedCups.transform.GetChild(collectedCups.transform.childCount - 1).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier) );
         }
     }
 
@@ -376,11 +380,6 @@ public class GameManager : MonoBehaviour
                 collectedCups.transform.GetChild(0).position = player.transform.position + Vector3.up * collectedCupYOffset;
             }
         }
-    }
-
-    public void PutLidToCup(GameObject liddedCup)
-    {
-        liddedCup.transform.GetChild(0).gameObject.SetActive(true);
     }
 
     // Reload the current scene to restart the game

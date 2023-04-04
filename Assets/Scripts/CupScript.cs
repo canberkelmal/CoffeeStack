@@ -17,6 +17,8 @@ public class CupScript : MonoBehaviour
 
     public bool resizing = false;
 
+    public bool isLidded = false;
+
     float startY;
 
     // Start is called before the first frame update
@@ -52,8 +54,51 @@ public class CupScript : MonoBehaviour
         }
     }
 
+    public void PutLid()
+    {
+        transform.GetChild(0).gameObject.SetActive(true);
+        price++;
+    }
+
     public IEnumerator ScaleObject(float scalingSens, float maxScaleConstant)
     {
+        if(!resizing)
+        {
+            resizing = true;
+            Vector3 targetScale = defScale * maxScaleConstant; // Hedef scale deðerleri
+
+            SetSizeDefault();
+            // Büyütme iþlemi
+            while (transform.localScale.x < targetScale.x)
+            {
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scalingSens * Time.deltaTime);
+                yield return new WaitForSeconds(0.01f);
+            }
+
+            if (transform.localScale.x >= targetScale.x)
+            {
+                transform.localScale = targetScale;
+            }
+
+            int siblingIndex = transform.GetSiblingIndex();
+            print("index: " + siblingIndex);
+            if (siblingIndex != 0)
+            {
+                StartCoroutine(transform.parent.GetChild(siblingIndex - 1).GetComponent<CupScript>().ScaleObject(scalingSens, maxScaleConstant));
+            }
+
+            yield return new WaitForSeconds(0.01f);
+
+            // Küçültme iþlemi
+            while (transform.localScale.x > defScale.x)
+            {
+                transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scalingSens * Time.deltaTime);
+                yield return new WaitForSeconds(0.01f);
+            }
+            SetSizeDefault();
+            resizing = false;
+        }
+        /*
         SetSizeDefault();
         Vector3 targetScale = defScale * maxScaleConstant; // Hedef scale deðerleri
 
@@ -69,9 +114,10 @@ public class CupScript : MonoBehaviour
             transform.localScale = targetScale;
         }
         int siblingIndex = transform.GetSiblingIndex();
+        print("index: " + siblingIndex);
         if (siblingIndex != 0)
         {
-            transform.parent.GetChild(siblingIndex - 1).GetComponent<CupScript>().ScaleObject(scalingSens, maxScaleConstant);
+            StartCoroutine(transform.parent.GetChild(siblingIndex - 1).GetComponent<CupScript>().ScaleObject(scalingSens, maxScaleConstant));
         }
 
         yield return new WaitForSeconds(0.001f);
@@ -83,49 +129,7 @@ public class CupScript : MonoBehaviour
             yield return new WaitForSeconds(0.001f);
         }
         SetSizeDefault();
-        /*
-        if(!resizing)
-        {
-            StopCoroutine("ScaleObject");
-            resizing = true;
-            Vector3 targetScale = defScale * maxScaleConstant; // Hedef scale deðerleri
-
-            SetSizeDefault();
-            // Büyütme iþlemi
-            while (transform.localScale.x < targetScale.x)
-            {
-                *//*if (gM.stopMoving)
-                {
-                    SetSizeDefault();
-                    break;
-                }*//*
-                transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scalingSens * Time.deltaTime);
-                yield return new WaitForSeconds(0.01f);
-            }
-
-            if (transform.localScale.x >= targetScale.x)
-            {
-                transform.localScale = targetScale;
-            }
-
-            yield return new WaitForSeconds(0.01f);
-
-            // Küçültme iþlemi
-            while (transform.localScale.x > defScale.x)
-            {
-                *//*if (gM.stopMoving)
-                {
-                    SetSizeDefault();
-                    break;
-                }*//*
-                transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scalingSens * Time.deltaTime);
-                yield return new WaitForSeconds(0.01f);
-            }
-            SetSizeDefault();
-            resizing = false;
-            //StopCoroutine("ScaleObject");
-        }*/
-
+        */
     }
 
     public void SetSizeDefault()

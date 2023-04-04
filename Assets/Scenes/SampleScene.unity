@@ -7883,11 +7883,10 @@ MonoBehaviour:
   minScattingZ: 100
   maxScattingZ: 200
   maxScattingHeight: 6
-  hitBackNumeratorInternals: 0.01
-  hitBackSens: 3
+  hitBackSens: 5
   hitBackZPoint: 20
-  hitBackBreakZ: 1
-  collectAnimSens: 1
+  hitBackBreakZ: 7
+  collectAnimSens: 25
   collectAnimScaleMultiplier: 1.3
   collectAnimTimeDiff: 0.074
   particleKillTime: 1
