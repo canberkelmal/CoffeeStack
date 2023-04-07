@@ -12,18 +12,16 @@ public class Wobble : MonoBehaviour
     public float MaxWobble = 0.03f;
     public float WobbleSpeed = 1f;
     public float Recovery = 1f;
-    float rotationZOffset;
     float wobbleAmountX;
-    float wobbleAmountZ;
     float wobbleAmountToAddX;
     float wobbleAmountToAddZ;
     float pulse;
     float time = 0.5f;
 
-    private void Awake()
+    private void Start()
     {
         rend = GetComponent<Renderer>();
-        rotationZOffset = rend.material.GetFloat("_WobbleZ");
+        wobbleAmountX = 0f;
     }
     private void Update()
     {
@@ -35,11 +33,9 @@ public class Wobble : MonoBehaviour
         // make a sine wave of the decreasing wobble
         pulse = 2 * Mathf.PI * WobbleSpeed;
         wobbleAmountX = wobbleAmountToAddX * Mathf.Sin(pulse * time);
-        wobbleAmountZ = wobbleAmountToAddZ * Mathf.Sin(pulse * time) + rotationZOffset;
 
         // send it to the shader
         rend.material.SetFloat("_WobbleX", wobbleAmountX);
-        //rend.material.SetFloat("_WobbleZ", wobbleAmountZ);
 
         // velocity
         velocity = (lastPos - transform.position) / Time.deltaTime;

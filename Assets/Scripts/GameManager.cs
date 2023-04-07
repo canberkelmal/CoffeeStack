@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        Time.timeScale = 1f;
+        // Time.timeScale = 1f;
     }
 
     // Start is called before the first frame update
@@ -413,13 +413,15 @@ public class GameManager : MonoBehaviour
 
     public void PauseButton()
     {
-        Time.timeScale = 0f;
+        // Time.timeScale = 0f;
+        stopMoving = true;
         playingPanel.SetActive(false);
         pausePanel.SetActive(value: true);
     }
     public void ContinueButton()
     {
-        Time.timeScale = 1f;
+        stopMoving = false;
+        // Time.timeScale = 1f;
         playingPanel.SetActive(true);
         pausePanel.SetActive(value: false);
     }
