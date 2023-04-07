@@ -61,11 +61,12 @@ public class CupScript : MonoBehaviour
         price += lidsPrice;
     }
 
-    public void PutSleeve(int sleevesrice)
+    public void PutSleeve(int sleevesPrice)
     {
-        // Put filled method/function here
+        // Put sleeved method/function here
+        transform.GetChild(2).gameObject.SetActive(true);
         isSleeved = true;
-        price += sleevesrice;
+        price += sleevesPrice;
     }
 
     public void FillTheCup(int fillPrice)

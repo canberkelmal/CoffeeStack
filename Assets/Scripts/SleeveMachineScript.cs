@@ -5,12 +5,11 @@ using UnityEngine;
 public class SleeveMachineScript : MonoBehaviour
 {
     GameManager gM;
-    public GameObject sleeveMachineParticle;
     void Start()
     {
         gM = FindObjectOfType<GameManager>();
-        Transform particlePoint = transform.GetChild(1).GetChild(0);
-        Instantiate(gM.sleeveMachineParticle, particlePoint.position, Quaternion.identity, particlePoint);
+        Transform particlePoint = transform.GetChild(0);
+        Instantiate(gM.sleeveMachineParticle, particlePoint.position + Vector3.down, Quaternion.Euler(-90, 0, 0) );
     }
 
     void OnTriggerEnter(Collider other)
