@@ -36,7 +36,7 @@ public class LidMachineScript : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CollectedCup"))
+        if (other.CompareTag("CollectedCup") && !other.GetComponent<CupScript>().isLidded)
         {
             gM.PutLidToCup(other.gameObject);
         }

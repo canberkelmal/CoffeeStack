@@ -444,7 +444,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxWobble: 0.01
   WobbleSpeed: 1
-  Recovery: 1.2
+  Recovery: 0.8
 --- !u!4 &6470658367897475246 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 43ec1c601ac6bf24eb27211b7689e71a,
