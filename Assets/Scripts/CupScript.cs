@@ -19,7 +19,9 @@ public class CupScript : MonoBehaviour
 
     public bool isLidded = false;
 
-    float startY;
+    public bool isFilled = false;
+
+    public bool isSleeved = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -33,8 +35,6 @@ public class CupScript : MonoBehaviour
         GetComponent<Renderer>().material = cup.mat; 
         
         defScale = transform.localScale;
-
-        startY = transform.localPosition.y;
     }
 
     void OnTriggerEnter(Collider other)
@@ -54,10 +54,26 @@ public class CupScript : MonoBehaviour
         }
     }
 
-    public void PutLid()
+    public void PutLid(int lidsPrice)
     {
         transform.GetChild(0).gameObject.SetActive(true);
-        price++;
+        isLidded= true;
+        price += lidsPrice;
+    }
+
+    public void PutSleeve(int sleevesrice)
+    {
+        // Put filled method/function here
+        isSleeved = true;
+        price += sleevesrice;
+    }
+
+    public void FillTheCup(int fillPrice)
+    {
+        transform.GetChild(1).GetComponent<Renderer>().material.SetFloat("_Fill", 0.66f);
+        // Put filled method/function here
+        isFilled = true;
+        price += fillPrice;
     }
 
     public IEnumerator ScaleObject(float scalingSens, float maxScaleConstant)

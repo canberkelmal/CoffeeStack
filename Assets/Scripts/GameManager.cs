@@ -32,6 +32,14 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameData")]
     public float collectedCupYOffset = 1f; // Y position offset for the collected cups 
 
+    [Title("Prices")]
+    [TabGroup("GameData")]
+    public int lidPrice = 1;
+    [TabGroup("GameData")]
+    public int fillPrice = 1;
+    [TabGroup("GameData")]
+    public int sleevePrice = 1;
+
     [Title("Hit Obstacle")]
     [TabGroup("GameData")]
     public float minScattingX = 1f; // Minimum scatting distance on the X plane
@@ -98,7 +106,12 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameObjects")]
     [AssetsOnly]
     public GameObject destroyCupEffect; // The destroy particle effect
-
+    [TabGroup("GameObjects")]
+    [AssetsOnly]
+    public GameObject flowCoffeParticle;
+    [TabGroup("GameObjects")]
+    [AssetsOnly]
+    public GameObject sleeveMachineParticle;
 
     Vector3 camOffset; // The offset value between the player and camera at the start of the game
     Vector3 targetPosZ; // The target position value used for updating the player's Z position
@@ -176,9 +189,8 @@ public class GameManager : MonoBehaviour
     // Update the camera's position to follow the player's position according to camOffset
     void UpdateCamPosition()
     {
-        //cam.transform.position = player.transform.position - camOffset;
-
-        cam.transform.position = Vector3.Lerp(cam.transform.position, player.transform.position - camOffset, camSpeed * Time.deltaTime) ;
+        cam.transform.position = Vector3.Lerp(cam.transform.position, player.transform.position - camOffset, camSpeed * Time.deltaTime);
+        // cam.transform.position = player.transform.position - camOffset;
     }
 
     // Update the players's horizontal/X position while mouse/finger is moving
@@ -234,8 +246,19 @@ public class GameManager : MonoBehaviour
 
     public void PutLidToCup(GameObject liddedCup)
     {
-        liddedCup.GetComponent<CupScript>().PutLid();
-        SetHandledPrice(1, true);
+        liddedCup.GetComponent<CupScript>().PutLid(lidPrice);
+        SetHandledPrice(lidPrice, true);
+    }
+    public void PutSleeveToCup(GameObject sleevedCup)
+    {
+        sleevedCup.GetComponent<CupScript>().PutSleeve(sleevePrice);
+        SetHandledPrice(sleevePrice, true);
+    }
+
+    public void FillTheCup(GameObject filledCup)
+    {
+        filledCup.GetComponent<CupScript>().FillTheCup(fillPrice);
+        SetHandledPrice(fillPrice, true);
     }
 
     public void HitCup(GameObject hitCup, ObsScript obsSc)
