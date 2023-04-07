@@ -13,5 +13,6 @@ public class Sound
     [Range(.1f, 3)]
     public float pitch;
     public float startTime;
+    public float endTime;
     internal AudioSource source;
 }

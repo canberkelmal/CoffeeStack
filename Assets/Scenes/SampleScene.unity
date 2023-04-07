@@ -8586,26 +8586,31 @@ MonoBehaviour:
     volume: 0.5
     pitch: 1
     startTime: 0
+    endTime: 0.6
   - name: PutLid
     clip: {fileID: 8300000, guid: 8b3848d6900879843a1ffd2a0ce93090, type: 3}
     volume: 0.5
     pitch: 1
     startTime: 0
+    endTime: 0.6
   - name: PutSleeve
     clip: {fileID: 8300000, guid: 9c62c93deb5774144a661cff013c5171, type: 3}
     volume: 0.5
     pitch: 1
     startTime: 0
+    endTime: 0.6
   - name: Fill
     clip: {fileID: 8300000, guid: 459917b52688dc34096745c5a94db379, type: 3}
     volume: 0.5
     pitch: 1
     startTime: 0
+    endTime: 0.6
   - name: Hit
     clip: {fileID: 8300000, guid: f9ccdb916ca1dea4ea6ecbdd7dc4d9f9, type: 3}
     volume: 0.5
     pitch: 1
     startTime: 0
+    endTime: 0.6
 --- !u!4 &1493171322
 Transform:
   m_ObjectHideFlags: 0
