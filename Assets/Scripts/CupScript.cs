@@ -63,7 +63,7 @@ public class CupScript : MonoBehaviour
 
     public void PutSleeve(int sleevesPrice)
     {
-        // Put sleeved method/function here
+        print("sleeved");
         transform.GetChild(2).gameObject.SetActive(true);
         isSleeved = true;
         price += sleevesPrice;
