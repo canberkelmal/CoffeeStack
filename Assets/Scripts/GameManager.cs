@@ -125,6 +125,8 @@ public class GameManager : MonoBehaviour
 
     bool isGameStarted = false;
 
+    AudioManager audioManager;
+
     void Awake()
     {
         // Time.timeScale = 1f;
@@ -136,6 +138,7 @@ public class GameManager : MonoBehaviour
         // MUST BE UPDATED AS TO FALLOW HAND!
         camOffset = player.transform.position - cam.transform.position; // Calculate the offset value between the player and camera
         cupCount = collectedCups.transform.childCount;
+        audioManager = FindObjectOfType<AudioManager>();
 
         // Set the cups which are placed as collected at beginning as collected
         for (int i=0; i<cupCount; i++)
@@ -213,6 +216,7 @@ public class GameManager : MonoBehaviour
     // Set the taken collectedCup as a child of collectedCups
     public void CollectCup(GameObject collectedCup)
     {
+        audioManager.Play("TakeCup");
         collectedCup.GetComponent<CupScript>().collected = true;
         collectedCup.tag = "CollectedCup";
         collectedCup.GetComponent<Collider>().isTrigger = false;
@@ -246,25 +250,28 @@ public class GameManager : MonoBehaviour
 
     public void PutLidToCup(GameObject liddedCup)
     {
+        audioManager.Play("PutLid");
         liddedCup.GetComponent<CupScript>().PutLid(lidPrice);
         SetHandledPrice(lidPrice, true);
     }
     public void PutSleeveToCup(GameObject sleevedCup)
     {
+        audioManager.Play("PutSleeve");
         sleevedCup.GetComponent<CupScript>().PutSleeve(sleevePrice);
         SetHandledPrice(sleevePrice, true);
     }
 
     public void FillTheCup(GameObject filledCup)
     {
+        audioManager.Play("Fill");
         filledCup.GetComponent<CupScript>().FillTheCup(fillPrice);
         SetHandledPrice(fillPrice, true);
     }
 
     public void HitCup(GameObject hitCup, ObsScript obsSc)
     {
+        audioManager.Play("Hit");
 
-        print(hitCup.transform.GetSiblingIndex() + ". child in" + cupCount);
         if (hitCup.transform.GetSiblingIndex() == cupCount - 1)
         {
             print("Destroy");
