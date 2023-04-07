@@ -6,10 +6,7 @@ using static Unity.Burst.Intrinsics.X86.Avx;
 public class ObsScript : MonoBehaviour
 {
     GameManager gM;
-
-    public Obstacle obs;
     public bool isHit = false;
-    string obsName;
     public Vector3 hitPoint;
     public bool hitBack;
 
@@ -17,16 +14,15 @@ public class ObsScript : MonoBehaviour
     void Awake()
     {
         gM = FindObjectOfType<GameManager>();
+    }
 
-        obsName = obs.name;
-
-        GetComponent<Renderer>().material = obs.mat;
-
-        hitBack = obs.hitBack;
+    void FixedUpdate()
+    {
+        
     }
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CollectedCup") && other.GetComponent<CupScript>().collected && !isHit)
+        if (other.CompareTag("CollectedCup") && other.GetComponent<CupScript>().collected)
         {
             hitPoint = other.transform.position;
             gM.HitCup(other.gameObject, gameObject.GetComponent<ObsScript>());
