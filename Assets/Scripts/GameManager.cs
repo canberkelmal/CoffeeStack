@@ -202,6 +202,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void PlayerGetCup()
+    {
+
+    }
+
+    public int GetCupCount()
+    {
+        return collectedCups.transform.childCount;
+    }
+
     // Update the camera's position to follow the player's position according to camOffset
     void UpdateCamPosition()
     {
