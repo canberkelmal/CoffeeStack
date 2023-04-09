@@ -71,7 +71,7 @@ public class CupScript : MonoBehaviour
 
     public void FillTheCup(int fillPrice)
     {
-        transform.GetChild(1).GetComponent<Renderer>().material.SetFloat("_Fill", 0.66f);
+        transform.GetChild(1).GetComponent<Renderer>().material.SetFloat("_Fill", 0.5f);
         // Put filled method/function here
         isFilled = true;
         price += fillPrice;

@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameData")]
     public float camSpeed = 1f; // Maksimum target x position value for the player
     [TabGroup("GameData")]
+    public float camFinishYOffs = 1f;
+    
+    [TabGroup("GameData")]
     public float collectedCupDistance = 4f; // Maksimum target x position value for the player
     [TabGroup("GameData")]
     public float cupWavingSens = 1f; // Maksimum target x position value for the player
@@ -114,6 +117,7 @@ public class GameManager : MonoBehaviour
     public GameObject sleeveMachineParticle;
 
     Vector3 camOffset; // The offset value between the player and camera at the start of the game
+    Vector3 camTarget;
     Vector3 targetPosZ; // The target position value used for updating the player's Z position
 
     public int cupCount = 1;
@@ -126,6 +130,8 @@ public class GameManager : MonoBehaviour
     bool isGameStarted = false;
 
     AudioManager audioManager;
+
+    bool isFinished = false;
 
     void Awake()
     {
@@ -159,7 +165,7 @@ public class GameManager : MonoBehaviour
             isGameStarted = true;
         }
         // Update the player's X position when the left mouse button is pressed
-        if (Input.GetMouseButton(0) && !stopMoving)
+        if (Input.GetMouseButton(0) && !stopMoving && !isFinished)
         {
             UpdatePlayerPositionX();
         }
@@ -168,6 +174,13 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             Restart();
+        }
+
+        if (isFinished && (player.transform.position.x < -0.01 && player.transform.position.x < 0.01))
+        {
+            player.transform.position = Vector3.Lerp(player.transform.position,
+                                                     player.transform.position - new Vector3(player.transform.position.x, 0,0),
+                                                     speed/4 * Time.deltaTime);
         }
     }
 
@@ -192,8 +205,19 @@ public class GameManager : MonoBehaviour
     // Update the camera's position to follow the player's position according to camOffset
     void UpdateCamPosition()
     {
-        cam.transform.position = Vector3.Lerp(cam.transform.position, player.transform.position - camOffset, camSpeed * Time.deltaTime);
+        camTarget = isFinished ? player.transform.position - camOffset + Vector3.up * camFinishYOffs + Vector3.forward * 12f : player.transform.position - camOffset;
+        cam.transform.position = Vector3.Lerp(cam.transform.position, camTarget, camSpeed * Time.deltaTime);
         // cam.transform.position = player.transform.position - camOffset;
+        if (isFinished && cam.GetComponent<Camera>().fieldOfView < 31f)
+        {
+            camSpeed *= 2;
+            cam.GetComponent<Camera>().fieldOfView = Mathf.MoveTowards(cam.GetComponent<Camera>().fieldOfView, 31, camSpeed * Time.deltaTime);
+            camSpeed /= 2;
+        }
+        else if(!isFinished && cam.GetComponent<Camera>().fieldOfView > 20f)
+        {
+            cam.GetComponent<Camera>().fieldOfView = 20f;
+        }
     }
 
     // Update the players's horizontal/X position while mouse/finger is moving
@@ -209,7 +233,7 @@ public class GameManager : MonoBehaviour
     // Update players's vertical/Z position using Lerp
     void UpdatePlayerPositionZ()
     {
-        targetPosZ = player.transform.position + new Vector3(0,0,1);
+        targetPosZ = player.transform.position + Vector3.forward; 
         player.transform.position = Vector3.Lerp(player.transform.position, targetPosZ, speed * Time.deltaTime);
     }
 
@@ -338,6 +362,11 @@ public class GameManager : MonoBehaviour
         Destroy(destroyCup);
         Destroy(destroyEffect, particleKillTime);
         cupCount = collectedCups.transform.childCount;
+    }
+
+    public void EnterToFinish()
+    {
+        isFinished = true;
     }
 
     /*IEnumerator CollectCupAnim()
