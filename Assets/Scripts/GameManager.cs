@@ -133,11 +133,6 @@ public class GameManager : MonoBehaviour
 
     bool isFinished = false;
 
-    void Awake()
-    {
-        // Time.timeScale = 1f;
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -200,11 +195,6 @@ public class GameManager : MonoBehaviour
         {
             UpdatePlayerPositionZ();
         }
-    }
-
-    public void PlayerGetCup()
-    {
-
     }
 
     public int GetCupCount()

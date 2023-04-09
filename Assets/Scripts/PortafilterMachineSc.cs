@@ -17,6 +17,7 @@ public class PortafilterMachineSc : MonoBehaviour
         if (other.CompareTag("CollectedCup") && !other.GetComponent<CupScript>().isFilled)
         {
             gM.FillTheCup(other.gameObject);
+            transform.GetChild(transform.childCount - 1).GetComponent<MachineCanvasSc>().TrigMachineCanvas(gM.fillPrice);
         }
     }
 }
