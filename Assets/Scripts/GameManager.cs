@@ -176,7 +176,7 @@ public class GameManager : MonoBehaviour
             Restart();
         }
 
-        if (isFinished && (player.transform.position.x < -0.01 && player.transform.position.x < 0.01))
+        if (isFinished && (player.transform.position.x < -0.01 || player.transform.position.x > 0.01))
         {
             player.transform.position = Vector3.Lerp(player.transform.position,
                                                      player.transform.position - new Vector3(player.transform.position.x, 0,0),
