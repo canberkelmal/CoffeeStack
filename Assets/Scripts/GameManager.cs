@@ -2,6 +2,7 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -104,6 +105,9 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameObjects")]
     [SceneObjectsOnly]
     public GameObject pausePanel;
+    [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
+    public GameObject finishPanel;
 
     [Title("Assets only")]
     [TabGroup("GameObjects")]
@@ -124,6 +128,8 @@ public class GameManager : MonoBehaviour
 
     int handledPrice = 0;
 
+    int playerTotalMoney = 0;
+
     //[NonSerialized]
     public bool stopMoving = false;
 
@@ -133,9 +139,13 @@ public class GameManager : MonoBehaviour
 
     bool isFinished = false;
 
+    float collectedMoney = 0;
+
     // Start is called before the first frame update
     void Start()
     {
+        collectedMoney = 0;
+        playerTotalMoney = PlayerPrefs.GetInt("playerTotalMoney", 0);
         // MUST BE UPDATED AS TO FALLOW HAND!
         camOffset = player.transform.position - cam.transform.position; // Calculate the offset value between the player and camera
         cupCount = collectedCups.transform.childCount;
@@ -147,6 +157,7 @@ public class GameManager : MonoBehaviour
             CollectCup(collectedCups.transform.GetChild(i).gameObject);
         }
         stopMoving = true;
+        playingPanel.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = playerTotalMoney.ToString();
     }
 
     // Update is called once per frame
@@ -364,11 +375,6 @@ public class GameManager : MonoBehaviour
         cupCount = collectedCups.transform.childCount;
     }
 
-    public void EnterToFinish()
-    {
-        isFinished = true;
-    }
-
     /*IEnumerator CollectCupAnim()
     {
         for(int i = collectedCups.transform.childCount-1; i >= 0; i--)
@@ -469,7 +475,38 @@ public class GameManager : MonoBehaviour
         Restart();
     }
 
+    public void EnterToFinish()
+    {
+        isFinished = true;
+    }
 
+    public void EnterToFinish2()
+    {
+        SetTotalMoney(true, handledPrice);
+        collectedMoney += handledPrice;
+        handledPrice = 0;
+        stopMoving = true;
+        playingPanel.SetActive(false);
+        finishPanel.SetActive(true);
+        finishPanel.transform.GetChild(2).GetComponent<Text>().text = collectedMoney.ToString() + "$";
+        finishPanel.transform.GetChild(4).GetComponent<Text>().text = playerTotalMoney.ToString() + "$";
+    }
+
+    public void LeftCupOnFinish(GameObject leftCupEnd, GameObject endHand, int handPrice)
+    {
+        SetTotalMoney(true, handPrice);
+        leftCupEnd.transform.parent = endHand.transform;
+        cupCount = collectedCups.transform.childCount;
+        endHand.GetComponent<EndHand>().TakeAnimStarter();
+    }
+
+    public void SetTotalMoney(bool op, int price)
+    {
+        playerTotalMoney += price;
+        collectedMoney += price;
+        PlayerPrefs.SetInt("playerTotalMoney", playerTotalMoney);
+        playingPanel.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = playerTotalMoney.ToString();
+    }
 
 
 
