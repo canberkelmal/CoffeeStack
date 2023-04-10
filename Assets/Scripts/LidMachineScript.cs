@@ -36,9 +36,10 @@ public class LidMachineScript : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CollectedCup") && !other.GetComponent<CupScript>().isLidded)
+        if (other.CompareTag("CollectedCup"))
         {
             gM.PutLidToCup(other.gameObject);
+            transform.GetChild(transform.childCount - 1).GetComponent<MachineCanvasSc>().TrigMachineCanvas(gM.lidPrice);
         }
     }
 

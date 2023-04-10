@@ -40,9 +40,10 @@ public class SleeveMachineScript : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CollectedCup") && !other.GetComponent<CupScript>().isSleeved)
+        if (other.CompareTag("CollectedCup"))
         {
             gM.PutSleeveToCup(other.gameObject);
+            transform.GetChild(transform.childCount - 1).GetComponent<MachineCanvasSc>().TrigMachineCanvas(gM.sleevePrice);
         }
     }
 }

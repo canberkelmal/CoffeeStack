@@ -14,7 +14,7 @@ public class PortafilterMachineSc : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CollectedCup") && !other.GetComponent<CupScript>().isFilled)
+        if (other.CompareTag("CollectedCup"))
         {
             gM.FillTheCup(other.gameObject);
             transform.GetChild(transform.childCount - 1).GetComponent<MachineCanvasSc>().TrigMachineCanvas(gM.fillPrice);
