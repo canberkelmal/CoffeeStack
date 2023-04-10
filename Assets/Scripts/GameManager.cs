@@ -475,6 +475,11 @@ public class GameManager : MonoBehaviour
         Restart();
     }
 
+    public void ResetPlayerTotalMoney()
+    {
+        PlayerPrefs.SetInt("playerTotalMoney", 0);
+    }
+
     public void EnterToFinish()
     {
         isFinished = true;
@@ -483,7 +488,6 @@ public class GameManager : MonoBehaviour
     public void EnterToFinish2()
     {
         SetTotalMoney(true, handledPrice);
-        collectedMoney += handledPrice;
         handledPrice = 0;
         stopMoving = true;
         playingPanel.SetActive(false);
