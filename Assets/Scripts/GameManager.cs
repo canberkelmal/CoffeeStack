@@ -499,9 +499,8 @@ public class GameManager : MonoBehaviour
     public void LeftCupOnFinish(GameObject leftCupEnd, GameObject endHand, int handPrice)
     {
         SetTotalMoney(true, handPrice);
-        leftCupEnd.transform.parent = endHand.transform;
+        leftCupEnd.transform.parent = endHand.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(3).GetChild(0);
         cupCount = collectedCups.transform.childCount;
-        endHand.GetComponent<EndHand>().TakeAnimStarter();
     }
 
     public void SetTotalMoney(bool op, int price)

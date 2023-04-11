@@ -126,6 +126,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d0fce31658a8264a9e54bc1e6be3144, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slideSpeed: 1
+  breakSlidePointY: 0.3
 --- !u!1001 &47573250441558367
 PrefabInstance:
   m_ObjectHideFlags: 0

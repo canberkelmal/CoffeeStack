@@ -12,7 +12,7 @@ public class EndTriggerSc2 : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CollectedCup"))
+        if (other.CompareTag("CollectedCup") || other.CompareTag("Player"))
         {
             gM.EnterToFinish2();
         }

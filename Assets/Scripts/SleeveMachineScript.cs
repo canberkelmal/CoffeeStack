@@ -6,15 +6,19 @@ using UnityEngine;
 public class SleeveMachineScript : MonoBehaviour
 {
     public float slideSpeed = 1f;
+    public float rotateSpeed = 1f;
     public float breakSlidePointY = 0.1f;
+    public MachineCanvasSc macCanvSc;
     GameManager gM;
     GameObject slidingSleeve;
     Vector3 slideStartPoint;
     Vector3 slideEndPoint;
+    bool rotating = false;
+    bool rotatingFin = false;
     void Start()
     {
-        slideStartPoint = transform.GetChild(5).position;
-        slideEndPoint = transform.GetChild(4).position;
+        slideStartPoint = transform.GetChild(5).localPosition;
+        slideEndPoint = transform.GetChild(4).localPosition;
         gM = FindObjectOfType<GameManager>();
         slidingSleeve = transform.GetChild(3).gameObject;
         Transform particlePoint = transform.GetChild(0);
@@ -24,17 +28,21 @@ public class SleeveMachineScript : MonoBehaviour
     private void Update()
     {
         SlideTheLid();
+        if(rotating && !rotatingFin)
+        {
+            RotatePoint();
+        }
     }
 
     private void SlideTheLid()
     {
-        if(slidingSleeve.transform.position.y < slideEndPoint.y - breakSlidePointY)
+        if(slidingSleeve.transform.localPosition.y < slideEndPoint.y - breakSlidePointY)
         {
-            slidingSleeve.transform.position = Vector3.Lerp(slidingSleeve.transform.position, slideEndPoint, slideSpeed * Time.deltaTime);
+            slidingSleeve.transform.localPosition = Vector3.Lerp(slidingSleeve.transform.localPosition, slideEndPoint, slideSpeed * Time.deltaTime);
         }
         else
         {
-            slidingSleeve.transform.position = slideStartPoint;
+            slidingSleeve.transform.localPosition = slideStartPoint;
         }
     }
 
@@ -43,7 +51,20 @@ public class SleeveMachineScript : MonoBehaviour
         if (other.CompareTag("CollectedCup"))
         {
             gM.PutSleeveToCup(other.gameObject);
-            transform.GetChild(transform.childCount - 1).GetComponent<MachineCanvasSc>().TrigMachineCanvas(gM.sleevePrice);
+            macCanvSc.TrigMachineCanvas(gM.sleevePrice);
+            rotating = true;
+        }
+    }
+
+    void RotatePoint()
+    {
+        if (transform.rotation.y < 75)
+        {
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0,80,0), rotateSpeed * Time.deltaTime);
+        }
+        else
+        {
+            rotatingFin = true;
         }
     }
 }
