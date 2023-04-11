@@ -68,8 +68,6 @@ public class GameManager : MonoBehaviour
     public float collectAnimSens = 1f; // Collect cup animation lerp value
     [TabGroup("GameData")]
     public float collectAnimScaleMultiplier = 1f; // Collect cup animation max scale up value
-    [TabGroup("GameData")]
-    public float collectAnimTimeDiff = 1f; // Collect cup animation time difference between 2 cup in seconds
 
 
     [Title("Destroy Cup")]
@@ -344,7 +342,7 @@ public class GameManager : MonoBehaviour
         if (player.transform.position.z > hitTo.z + hitBackBreakZ)
         {
             player.transform.position = Vector3.Lerp(player.transform.position, hitTo, hitBackSens * Time.deltaTime);
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(Time.fixedDeltaTime);
             StartCoroutine(HitBack(hitTo));
         }
         else
@@ -400,7 +398,8 @@ public class GameManager : MonoBehaviour
         else
         {
             print("CollectCupAnim first object triggered triggered");
-            StartCoroutine( collectedCups.transform.GetChild(collectedCups.transform.childCount - 1).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier) );
+            collectedCups.transform.GetChild(collectedCups.transform.childCount - 1).GetComponent<CupScript>().Scale(collectAnimSens, collectAnimScaleMultiplier);
+            // StartCoroutine( collectedCups.transform.GetChild(collectedCups.transform.childCount - 1).GetComponent<CupScript>().ScaleObject(collectAnimSens, collectAnimScaleMultiplier) );
         }
     }
 
@@ -429,8 +428,13 @@ public class GameManager : MonoBehaviour
     {
         for(int i=0; i< collectedCups.transform.childCount; i++)
         {
+            // Set position of the 0th cup to player's position
+            if(i == 0)
+            {
+                collectedCups.transform.GetChild(0).position = player.transform.position + Vector3.up * collectedCupYOffset;
+            }
             // Set positions of the cups except 0th cup
-            if(i != 0)
+            else
             {
                 Transform preCup = collectedCups.transform.GetChild(i - 1).transform;
                 float targetX = Mathf.Lerp(collectedCups.transform.GetChild(i).position.x, preCup.transform.position.x, cupWavingSens * Time.deltaTime);
@@ -438,11 +442,6 @@ public class GameManager : MonoBehaviour
                 Vector3 targetPos = new Vector3(targetX, preCup.transform.position.y, targetZ);
 
                 collectedCups.transform.GetChild(i).position = targetPos;
-            }
-            // Set position of the 0th cup to player's position
-            else
-            {
-                collectedCups.transform.GetChild(0).position = player.transform.position + Vector3.up * collectedCupYOffset;
             }
         }
     }

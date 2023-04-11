@@ -15,13 +15,19 @@ public class CupScript : MonoBehaviour
 
     public bool collected = false;
 
-    public bool resizing = false;
-
     public bool isLidded = false;
 
     public bool isFilled = false;
 
     public bool isSleeved = false;
+
+    public bool resizing = false;
+    bool growing = false;
+    bool smalling = false;
+    float scaleSpeed = 0;
+    float scaleCons = 0;
+    bool signaled = false;
+    Vector3 targetScale = Vector3.zero;
 
     // Start is called before the first frame update
     void Awake()
@@ -35,6 +41,15 @@ public class CupScript : MonoBehaviour
         GetComponent<Renderer>().material = cup.mat; 
         
         defScale = transform.localScale;
+    }
+
+    private void FixedUpdate()
+    {
+        if (resizing)
+        {
+            Anim();
+        }
+
     }
 
     void OnTriggerEnter(Collider other)
@@ -77,19 +92,84 @@ public class CupScript : MonoBehaviour
         price += fillPrice;
     }
 
-    public IEnumerator ScaleObject(float scalingSens, float maxScaleConstant)
+    public void Anim()
+    {
+        if (growing)
+        {
+            print("growing");
+            //SetSizeDefault();
+            // Büyütme iþlemi
+            if (transform.localScale.x < targetScale.x)
+            {
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scaleSpeed * Time.deltaTime);
+            }
+
+            else
+            {
+                transform.localScale = targetScale;
+                growing = false;
+                smalling = true;
+            }
+
+            if(!signaled && transform.localScale.x > targetScale.x / 15*13)
+            {
+                signaled = true;
+                int siblingIndex = transform.GetSiblingIndex();
+                if (siblingIndex != 0)
+                {
+                    transform.parent.GetChild(siblingIndex - 1).GetComponent<CupScript>().Scale(scaleSpeed, scaleCons);
+                }
+            }
+        }        
+
+
+        if(smalling)
+        {
+            print("smalling");
+            if (transform.localScale.x > defScale.x)
+            {
+                transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scaleSpeed * Time.deltaTime);
+            }
+            else
+            {
+                SetSizeDefault();
+                resizing = false;
+                smalling = false;
+                signaled = false;
+            }
+        }
+    }
+
+    public void Scale(float scalingSens, float maxScaleConstant)
+    {
+        resizing = false;
+        growing = false;
+        smalling = false;
+        scaleSpeed = scalingSens;
+        scaleCons = maxScaleConstant;
+        targetScale = defScale * scaleCons;
+        growing = true;
+        resizing = true;
+    }
+
+    public void SetSizeDefault()
+    {
+        transform.localScale = defScale;
+    }
+
+    /*public IEnumerator ScaleObject(float scalingSens, float maxScaleConstant)
     {
         if(!resizing)
         {
             resizing = true;
-            Vector3 targetScale = defScale * maxScaleConstant; // Hedef scale deðerleri
+            Vector3 targetScale = defScale * maxScaleConstant;
 
             SetSizeDefault();
             // Büyütme iþlemi
             while (transform.localScale.x < targetScale.x)
             {
                 transform.localScale = Vector3.Lerp(transform.localScale, targetScale * 1.2f, scalingSens * Time.deltaTime);
-                yield return new WaitForSeconds(0.01f);
+                yield return new WaitForSeconds(Time.fixedDeltaTime);
             }
 
             if (transform.localScale.x >= targetScale.x)
@@ -104,18 +184,18 @@ public class CupScript : MonoBehaviour
                 StartCoroutine(transform.parent.GetChild(siblingIndex - 1).GetComponent<CupScript>().ScaleObject(scalingSens, maxScaleConstant));
             }
 
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(Time.fixedDeltaTime);
 
             // Küçültme iþlemi
             while (transform.localScale.x > defScale.x)
             {
                 transform.localScale = Vector3.Lerp(transform.localScale, defScale / 1.2f, scalingSens * Time.deltaTime);
-                yield return new WaitForSeconds(0.01f);
+                yield return new WaitForSeconds(Time.fixedDeltaTime);
             }
             SetSizeDefault();
             resizing = false;
         }
-        /*
+        *//*
         SetSizeDefault();
         Vector3 targetScale = defScale * maxScaleConstant; // Hedef scale deðerleri
 
@@ -146,13 +226,8 @@ public class CupScript : MonoBehaviour
             yield return new WaitForSeconds(0.001f);
         }
         SetSizeDefault();
-        */
-    }
-
-    public void SetSizeDefault()
-    {
-        transform.localScale = defScale;
-    }
+        *//*
+    }*/
 
 
 }
