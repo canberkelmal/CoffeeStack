@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,7 @@ public class StairSc : MonoBehaviour
         {
 
             transform.GetChild(i).GetChild(0).GetChild(0).GetComponent<Text>().text = (transform.GetChild(i).localPosition.y * 2).ToString();
+            transform.GetChild(i).GetChild(0).GetChild(1).GetComponent<Text>().text = (Convert.ToInt32(transform.GetChild(i).localPosition.y * 4 / 50 ) + 2).ToString();
 
             if (i%2 == 0)
             {

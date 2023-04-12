@@ -142,6 +142,8 @@ public class GameManager : MonoBehaviour
 
     bool handIncreasing = false;
 
+    bool increasingFinished = false;
+
     AudioManager audioManager;
 
     bool isFinished = false;
@@ -169,7 +171,9 @@ public class GameManager : MonoBehaviour
             CollectCup(collectedCups.transform.GetChild(i).gameObject);
         }
         stopMoving = true;
-        playingPanel.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = playerTotalMoney.ToString();
+        //playingPanel.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = playerTotalMoney.ToString();
+        SetTotalBoxCount(true, 0);
+        SetTotalMoney(true, 0);
     }
 
     // Update is called once per frame
@@ -508,6 +512,10 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("playerTotalMoney", 0);
     }
+    public void ResetPlayerBoxCount()
+    {
+        PlayerPrefs.SetInt("playerBoxCount", 0);
+    }
 
     public void EnterToFinish()
     {
@@ -552,8 +560,9 @@ public class GameManager : MonoBehaviour
         {
             player.transform.position = Vector3.Lerp(player.transform.position, targetIncreasePos, riseSpeed * Time.deltaTime);
         }
-        else
+        else if(!increasingFinished && player.transform.position.y >= targetStair.transform.position.y - 0.5f)
         {
+            increasingFinished = true;
             camSpeed /= 2;
             FinishIncreasing();
         }
@@ -561,8 +570,9 @@ public class GameManager : MonoBehaviour
 
     private void FinishIncreasing()
     {
+        SetTotalBoxCount(true, (Convert.ToInt32(targetStair.transform.localPosition.y * 4 / 50) + 2));
         handledPrice = 0;
-        playingPanel.SetActive(false);
+        //playingPanel.SetActive(false);
         finishPanel.SetActive(true);
         finishPanel.transform.GetChild(2).GetComponent<Text>().text = collectedMoney.ToString() + "$";
         finishPanel.transform.GetChild(4).GetComponent<Text>().text = playerTotalMoney.ToString() + "$";
@@ -581,6 +591,12 @@ public class GameManager : MonoBehaviour
         collectedMoney += price;
         PlayerPrefs.SetInt("playerTotalMoney", playerTotalMoney);
         playingPanel.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = playerTotalMoney.ToString();
+    }
+
+    public void SetTotalBoxCount(bool op, int boxCount)
+    {
+        PlayerPrefs.SetInt("playerBoxCount", PlayerPrefs.GetInt("playerBoxCount") + boxCount);
+        playingPanel.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = PlayerPrefs.GetInt("playerBoxCount", 0).ToString();
     }
 
 
