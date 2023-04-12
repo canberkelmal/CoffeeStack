@@ -23,8 +23,6 @@ public class GameManager : MonoBehaviour
 
 
     [TabGroup("GameData")]
-    public Scene idleScene;
-    [TabGroup("GameData")]
     public float camSpeed = 1f; // Maksimum target x position value for the player
     [TabGroup("GameData")]
     public float camFinishYOffs = 1f;
@@ -503,7 +501,7 @@ public class GameManager : MonoBehaviour
 
     public void LoadIdle()
     {
-        SceneManager.LoadScene(idleScene.name);
+        SceneManager.LoadScene("IdleScene");
     }
 
     public void ResetPlayerTotalMoney()
