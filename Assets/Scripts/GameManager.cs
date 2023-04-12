@@ -23,10 +23,16 @@ public class GameManager : MonoBehaviour
 
 
     [TabGroup("GameData")]
+    public Scene idleScene;
+    [TabGroup("GameData")]
     public float camSpeed = 1f; // Maksimum target x position value for the player
     [TabGroup("GameData")]
     public float camFinishYOffs = 1f;
-    
+    [TabGroup("GameData")]
+    public Vector3 camRisingOffs;
+    [TabGroup("GameData")]
+    public float riseSpeed = 1f;
+
     [TabGroup("GameData")]
     public float collectedCupDistance = 4f; // Maksimum target x position value for the player
     [TabGroup("GameData")]
@@ -89,6 +95,9 @@ public class GameManager : MonoBehaviour
     [TabGroup("GameObjects")]
     [SceneObjectsOnly]
     public GameObject droppedCups; // The dropped cups object in the scene
+    [TabGroup("GameObjects")]
+    [SceneObjectsOnly]
+    public GameObject stairs;
 
     [Title("UI")]
     [TabGroup("GameObjects")]
@@ -133,11 +142,18 @@ public class GameManager : MonoBehaviour
 
     bool isGameStarted = false;
 
+    bool handIncreasing = false;
+
     AudioManager audioManager;
 
     bool isFinished = false;
+    bool setCamIncrease = false;
 
-    float collectedMoney = 0;
+    int collectedMoney = 0;
+
+    GameObject targetStair;
+
+    Vector3 targetIncreasePos;
 
     // Start is called before the first frame update
     void Start()
@@ -204,6 +220,11 @@ public class GameManager : MonoBehaviour
         {
             UpdatePlayerPositionZ();
         }
+
+        if(handIncreasing)
+        {
+            IncreaseHand();
+        }
     }
 
     public int GetCupCount()
@@ -222,6 +243,12 @@ public class GameManager : MonoBehaviour
             camSpeed *= 2;
             cam.GetComponent<Camera>().fieldOfView = Mathf.MoveTowards(cam.GetComponent<Camera>().fieldOfView, 31, camSpeed * Time.deltaTime);
             camSpeed /= 2;
+        }
+        else if(isFinished && setCamIncrease && cam.GetComponent<Camera>().fieldOfView < 45f)
+        {
+            //camSpeed *= 2;
+            cam.GetComponent<Camera>().fieldOfView = Mathf.MoveTowards(cam.GetComponent<Camera>().fieldOfView, 45, camSpeed * Time.deltaTime);
+            //camSpeed /= 2;
         }
         else if(!isFinished && cam.GetComponent<Camera>().fieldOfView > 20f)
         {
@@ -474,6 +501,11 @@ public class GameManager : MonoBehaviour
         Restart();
     }
 
+    public void LoadIdle()
+    {
+        SceneManager.LoadScene(idleScene.name);
+    }
+
     public void ResetPlayerTotalMoney()
     {
         PlayerPrefs.SetInt("playerTotalMoney", 0);
@@ -482,13 +514,56 @@ public class GameManager : MonoBehaviour
     public void EnterToFinish()
     {
         isFinished = true;
+        handledPriceText.transform.parent.gameObject.SetActive(false);
     }
 
     public void EnterToFinish2()
     {
         SetTotalMoney(true, handledPrice);
-        handledPrice = 0;
+        PickStair(collectedMoney);
+        if(collectedCups.transform.childCount > 0)
+        {
+            for(int i = 0; i<collectedCups.transform.childCount; i++)
+            {
+                Destroy(collectedCups.transform.GetChild(i).gameObject);
+            }
+        }
+        StartCoroutine(HandIncreasing());
+    }
+
+    IEnumerator HandIncreasing()
+    {
         stopMoving = true;
+        setCamIncrease = true;
+        camOffset -= Vector3.down * 6.5f;
+        yield return new WaitForSeconds(1);
+        targetIncreasePos = player.transform.position + Vector3.up * targetStair.transform.position.y;
+        camSpeed *= 2;
+        handIncreasing = true;
+    }
+
+    private void PickStair(int pr)
+    {
+        print("target stair is " + Convert.ToInt32(pr / 5 + 1 ));
+        targetStair = stairs.transform.GetChild( Convert.ToInt32( pr/5 + 1)).gameObject;
+    }
+
+    void IncreaseHand()
+    {
+        if(player.transform.position.y < targetStair.transform.position.y-0.5f)
+        {
+            player.transform.position = Vector3.Lerp(player.transform.position, targetIncreasePos, riseSpeed * Time.deltaTime);
+        }
+        else
+        {
+            camSpeed /= 2;
+            FinishIncreasing();
+        }
+    }
+
+    private void FinishIncreasing()
+    {
+        handledPrice = 0;
         playingPanel.SetActive(false);
         finishPanel.SetActive(true);
         finishPanel.transform.GetChild(2).GetComponent<Text>().text = collectedMoney.ToString() + "$";
