@@ -10,6 +10,7 @@ public class Workers : MonoBehaviour
 
     public Transform untakenCups;
     public Transform leftedCups;
+    public Animator baristaAnimator;
 
     public bool handled = false;
 
@@ -28,6 +29,11 @@ public class Workers : MonoBehaviour
         if ( (gameObject.CompareTag("coffeeWorker") && gM.untakenCoffees.transform.childCount > 0) || handled)
         {
             WorkerMovement();
+            baristaAnimator.SetBool("Walking", true);
+        }
+        else
+        {
+            baristaAnimator.SetBool("Walking", false);
         }
     }
 

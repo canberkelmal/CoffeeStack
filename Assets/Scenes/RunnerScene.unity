@@ -3292,6 +3292,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: leverl_way_2
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: da3be920b0d2aca43ad2b89109f2101e,
+        type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da3be920b0d2aca43ad2b89109f2101e, type: 3}
 --- !u!1001 &276703642
@@ -12009,7 +12014,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -470067213634067786, guid: da3be920b0d2aca43ad2b89109f2101e, type: 3}
 --- !u!1 &861450609

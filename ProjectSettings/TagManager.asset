@@ -9,6 +9,19 @@ TagManager:
   - DroppedCup
   - Ground
   - EndGround
+  - Coffee
+  - CoffeeBox
+  - CoffeePoint
+  - DonutBox
+  - DonutPoint
+  - Hand
+  - coffeeWorker
+  - untakenCoffee
+  - CoffeeStack
+  - Serving
+  - Donut
+  - PlayerTakeCoffe
+  - PlayerHand
   layers:
   - Default
   - TransparentFX
