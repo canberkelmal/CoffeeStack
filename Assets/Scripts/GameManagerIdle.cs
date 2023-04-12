@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManagerIdle : MonoBehaviour
 {
@@ -32,7 +34,8 @@ public class GameManagerIdle : MonoBehaviour
     public GameObject coffeePersonel;
     [TabGroup("GameObjects")]
     [SceneObjectsOnly]
-    public GameObject untakenCoffees, unservedCoffees, untakenCoffeeTable, unservedCoffeeTable;
+    public GameObject playingPanel,untakenCoffees, unservedCoffees, untakenCoffeeTable, unservedCoffeeTable;
+    
 
     [Title("Asset objects")]
     [TabGroup("GameObjects")]
@@ -47,31 +50,21 @@ public class GameManagerIdle : MonoBehaviour
     float coffeeRow = 0;
     
     float unsCoffeeRow = 0;
-    
 
-    
-
-
-
-
+    int boxRemaining = 0;
     void Awake()
-    {
-        
+    {        
         InvokeRepeating("SpawnCoffeeBox", spawnTime2, spawnDelay2);
 
         boxSpawnPoint = GameObject.Find("SpawnBox").transform.position;
         boxSpawnRotation = GameObject.Find("SpawnBox").transform.rotation;
+        boxRemaining = PlayerPrefs.GetInt("playerBoxCount", 0);
     }
 
     private void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        SetTotalBoxCount(true, 0);
+        SetTotalMoney(true, 0);
     }
 
     public void WorkerTakeObject(GameObject worker, GameObject obj)
@@ -152,10 +145,28 @@ public class GameManagerIdle : MonoBehaviour
     public void SpawnCoffeeBox()
     {
         Instantiate(coffeeBox, boxSpawnPoint, boxSpawnRotation);
-        if (stopSpawning)
+
+        boxRemaining--;
+        SetTotalBoxCount(true, -1);
+
+        if (stopSpawning || boxRemaining <= 0)
         {
             CancelInvoke("SpawnCoffeeBox");
         }
+    }
+    public void SetTotalMoney(bool op, int price)
+    {
+        PlayerPrefs.SetInt("playerTotalMoney", PlayerPrefs.GetInt("playerTotalMoney") + price);
+        playingPanel.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = PlayerPrefs.GetInt("playerTotalMoney").ToString();
+    }
+    public void SetTotalBoxCount(bool op, int boxCount)
+    {
+        PlayerPrefs.SetInt("playerBoxCount", PlayerPrefs.GetInt("playerBoxCount") + boxCount);
+        playingPanel.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = PlayerPrefs.GetInt("playerBoxCount", 0).ToString();
+    }
+    public void LoadRunner()
+    {
+        SceneManager.LoadScene("RunnerScene");
     }
 
     public void CoffeeToUntaken(GameObject movedCoffee)
